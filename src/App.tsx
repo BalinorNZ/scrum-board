@@ -1,20 +1,19 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { BoardList } from "./JiraInterfaces";
 //import fetch, {RequestInit, Request, Headers} from 'node-fetch';
 //import * as fs from 'fs-extra';
 //import * as _ from 'lodash';
 //import moment from 'moment';
 
-const ATLASSIAN_USERNAME = '';
-const ATLASSIAN_API_KEY = '';
-const BOARD_NAME = 'Education Scrum Board';
-const JIRA_URL = 'https://adinstruments.atlassian.net';
+const BOARD_NAME = 'MKTG board';
 
 class App extends Component {
   state = {};
-  componentWillMount() {
-
+  async componentDidMount() {
+      // const boards: BoardList = await fetchAuth(`${JIRA_URL}/rest/agile/1.0/board`);
+      // console.log(boards);
   }
   render() {
     return (
