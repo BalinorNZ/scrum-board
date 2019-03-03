@@ -1,40 +1,44 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import "./App.css";
 import { BoardList } from "./JiraInterfaces";
-//import fetch, {RequestInit, Request, Headers} from 'node-fetch';
-//import * as fs from 'fs-extra';
-//import * as _ from 'lodash';
-//import moment from 'moment';
+import APIURL from "./ApiURL";
+import Board from "./Board";
 
-const BOARD_NAME = 'MKTG board';
+const BOARD_NAME = "MKTG board";
 
 class App extends Component {
-  state = {};
-  async componentDidMount() {
-      // const boards: BoardList = await fetchAuth(`${JIRA_URL}/rest/agile/1.0/board`);
-      // console.log(boards);
+  state = {
+    boards: []
+  };
+  componentDidMount() {
+    fetch(`${APIURL}/`, {
+      method: "get"
+    })
+      .then(res => res.json())
+      .then(boards => {
+        this.setState({ boards });
+      });
   }
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Router>
+        <div className="App">
+          <ul>
+            {this.state.boards.map((board: any) => (
+              <li key={board.id}>
+                <Link to={`/board/${board.id}`}>{board.name}</Link>
+              </li>
+            ))}
+          </ul>
+          <Route path="/" exact component={Welcome} />
+          <Route path="/board/:id" exact component={Board} />
+        </div>
+      </Router>
     );
   }
 }
 
 export default App;
+
+const Welcome = () => <div>Welcome!</div>;
