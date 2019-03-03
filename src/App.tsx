@@ -1,11 +1,8 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import "./App.css";
-import { BoardList } from "./JiraInterfaces";
 import APIURL from "./ApiURL";
 import Board from "./Board";
-
-const BOARD_NAME = "MKTG board";
 
 class App extends Component {
   state = {

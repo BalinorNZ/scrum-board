@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import APIURL from "./ApiURL";
 import { RouteComponentProps } from "react-router";
 import { Issue, Story, SubTask } from "./JiraInterfaces";
+import groupBy from "lodash.groupby";
 
 interface BoardState {
   stories: Issue[];
-  subtasks: Issue[];
 }
 
 interface BoardRouterProps {
@@ -14,14 +14,14 @@ interface BoardRouterProps {
 interface BoardProps extends RouteComponentProps<BoardRouterProps> {}
 
 class Board extends Component<BoardProps, BoardState> {
-  state = { stories: [], subtasks: [] };
+  state = { stories: [] };
   componentDidMount() {
     fetch(`${APIURL}/board/${this.props.match.params.id}`, {
       method: "get"
     })
       .then(res => res.json())
-      .then(({ stories, subtasks }) => {
-        this.setState({ stories, subtasks });
+      .then(({ stories }) => {
+        this.setState({ stories });
       });
   }
   render() {
@@ -31,31 +31,12 @@ class Board extends Component<BoardProps, BoardState> {
           Stories for Board {this.props.match.params.id} ({
             this.state.stories.length
           }{" "}
-          stories, {this.state.subtasks.length} sub-tasks)
+          stories)
         </h2>
         {this.state.stories.length === 0 && <div>Loading...</div>}
         <ul>
           {this.state.stories.map((story: Story) => (
-            <li
-              className={`status ${slugify(story.fields.status.name)}`}
-              key={story.id}
-            >
-              {story.fields.summary}
-              <br />
-              {story.fields.epic && story.fields.epic.name} {story.key}{" "}
-              {story.fields.customfield_10806} {story.fields.priority.name}
-              <img src={story.fields.assignee.avatarUrls["48x48"]} />
-              {story.fields.subtasks.map(subtaskRef => {
-                const subtask: any = this.state.subtasks.find(
-                  (s: SubTask) => s.id === subtaskRef.id
-                );
-                console.log(subtask);
-                if (subtask.fields.assignee)
-                  return (
-                    <img src={subtask.fields.assignee.avatarUrls["48x48"]} />
-                  );
-              })}
-            </li>
+            <StoryCard story={story} />
           ))}
         </ul>
       </div>
@@ -64,6 +45,43 @@ class Board extends Component<BoardProps, BoardState> {
 }
 
 export default Board;
+
+interface StoryProps {
+  story: Story;
+}
+
+const StoryCard = ({ story }: StoryProps) => {
+  const groupedAssignees = groupBy(
+    story.fields.subtasks,
+    (subtask: any) =>
+      subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
+  );
+  console.log(groupedAssignees);
+  return (
+    <li
+      className={`status ${slugify(story.fields.status.name)}`}
+      key={story.id}
+    >
+      {story.fields.summary}
+      <br />
+      {story.fields.epic && story.fields.epic.name} {story.key}{" "}
+      {story.fields.customfield_10806} {story.fields.priority.name}
+      {Object.keys(groupedAssignees).length ? (
+        Object.keys(groupedAssignees).map((key: any, index) => (
+          <div className="avatar-with-count">
+            <img key={index} className="avatar" src={key} />
+            <span>{groupedAssignees[key].length}</span>
+          </div>
+        ))
+      ) : (
+        <img
+          className="avatar"
+          src={story.fields.assignee.avatarUrls["32x32"]}
+        />
+      )}
+    </li>
+  );
+};
 
 function slugify(string: string) {
   const a = "àáäâãåèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;";

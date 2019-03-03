@@ -19,3 +19,21 @@
   background-color: rgb(255, 222, 222);
   color: rgb(166, 7, 7);
 }
+.avatar {
+  border-radius: 50%;
+}
+.avatar-with-count {
+  display: inline;
+}
+.avatar-with-count span {
+  position: relative;
+  left: -10px;
+  color: black;
+  background-color: white;
+  display: inline-block;
+  text-align: center;
+  width: 17px;
+  height: 17px;
+  line-height: 17px;
+  border-radius: 50%;
+}
