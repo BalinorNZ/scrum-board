@@ -29,6 +29,17 @@ class Board extends Component<BoardProps, BoardState> {
     })
       .then(res => res.json())
       .then(({ stories }) => {
+        // TODO: create allSubtasks list to use for global avatars filter with total subtasks counts
+        // let allSubtasks: any[] = [];
+        // stories.map((story: Story) =>
+        //   allSubtasks.concat(story.fields.subtasks)
+        // );
+        // console.log(allSubtasks);
+        //   groupBy(
+        //   stories.fields.subtasks,
+        //   (subtask: SubTask) =>
+        //     subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
+        // );
         this.setState({ stories });
       });
   }
