@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import APIURL from "./ApiURL";
 import { RouteComponentProps } from "react-router";
-import { Issue, Story, SubTask } from "./JiraInterfaces";
+import { Issue, Sprint, Story, SubTask } from "./JiraInterfaces";
 import groupBy from "lodash.groupby";
+import Spinner from "./Spinner";
 
 interface BoardState {
   stories: Issue[];
+  sprint: Sprint | undefined;
 }
 
 interface BoardRouterProps {
@@ -14,8 +16,14 @@ interface BoardRouterProps {
 interface BoardProps extends RouteComponentProps<BoardRouterProps> {}
 
 class Board extends Component<BoardProps, BoardState> {
-  state = { stories: [] };
+  state = { stories: [], sprint: {} as Sprint };
   componentDidMount() {
+    fetch(`${APIURL}/board/${this.props.match.params.id}/sprint`, {
+      method: "get"
+    })
+      .then(res => res.json())
+      .then(({ sprint }) => this.setState({ sprint }));
+
     fetch(`${APIURL}/board/${this.props.match.params.id}`, {
       method: "get"
     })
@@ -25,18 +33,66 @@ class Board extends Component<BoardProps, BoardState> {
       });
   }
   render() {
+    const inProgress = this.state.stories.filter(
+      (story: Story) =>
+        story.fields.status.name === "In Progress" ||
+        story.fields.status.name === "Blocked"
+    );
+    const toDo = this.state.stories.filter(
+      (story: Story) => story.fields.status.name === "To Do"
+    );
+    const done = this.state.stories.filter(
+      (story: Story) =>
+        story.fields.status.name === "Done" ||
+        story.fields.status.name === "Closed"
+    );
     return (
-      <div>
-        <h2>
-          Stories for Board {this.props.match.params.id} (
-          {this.state.stories.length} stories)
-        </h2>
-        {this.state.stories.length === 0 && <div>Loading...</div>}
-        <ul>
-          {this.state.stories.map((story: Story) => (
-            <StoryCard story={story} />
-          ))}
-        </ul>
+      <div className="board">
+        <div className="board-header">
+          <span className="sprint-title">{this.state.sprint.name}</span>
+          <span className="story-count">
+            {this.state.stories.length} stories
+          </span>
+          <p className="sprint-dates">
+            <span>{formatDate(this.state.sprint.startDate)}</span>
+            <span className="divider">•</span>
+            <span>{formatDate(this.state.sprint.endDate)}</span>
+          </p>
+        </div>
+        {this.state.stories.length === 0 ? (
+          <Spinner />
+        ) : (
+          <ul className="columns">
+            <li className="todo-column">
+              <div className="column-header">
+                Sprint Backlog ({toDo.length})
+              </div>
+              <ul>
+                {toDo.map((story: Story) => (
+                  <StoryCard key={story.id} story={story} />
+                ))}
+              </ul>
+            </li>
+            <li className="inprogress-column">
+              <div className="column-header">
+                In Progress ({inProgress.length})
+              </div>
+              <ul>
+                {inProgress.map((story: Story) => (
+                  <StoryCard key={story.id} story={story} />
+                ))}
+              </ul>
+            </li>
+            <li className="done-column">
+              <div className="column-header">Done ({done.length})</div>
+              <ul>
+                {done.map((story: Story) => (
+                  <StoryCard key={story.id} story={story} />
+                ))}
+              </ul>
+            </li>
+          </ul>
+        )}
       </div>
     );
   }
@@ -49,45 +105,107 @@ interface StoryProps {
 }
 
 const StoryCard = ({ story }: StoryProps) => {
-  const groupedAssignees = groupBy(
+  const groupedSubtasks = groupBy(
     story.fields.subtasks,
-    (subtask: any) =>
+    (subtask: SubTask) =>
       subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
   );
-  //console.log(groupedAssignees);
   const epicColor =
     (story.fields.epic && story.fields.epic.color.key) || "none";
   return (
     <li className="story" key={story.id}>
-      <section className="summary">{story.fields.summary}</section>
-      <section className={"epic"}>
-        <span className={epicColor + " epic-label"}>
-          {story.fields.epic && story.fields.epic.name}
-        </span>
+      <section>
+        <p className="summary">{story.fields.summary}</p>
+        {story.fields.epic && (
+          <p className="epic">
+            <span className={epicColor + " epic-label"}>
+              {story.fields.epic.name}
+            </span>
+          </p>
+        )}
       </section>
-      <br />
+      <section className="avatars">
+        {Object.keys(groupedSubtasks).length ? (
+          Object.keys(groupedSubtasks).map((key: any, index) => (
+            <div key={index} className="avatar-with-count">
+              {key === "null" ? (
+                <UnassignedAvatar />
+              ) : (
+                <img
+                  key={index}
+                  alt="assignee avatar"
+                  className="avatar"
+                  src={key}
+                />
+              )}
+              <span>
+                {
+                  groupedSubtasks[key].filter((subtask: SubTask) =>
+                    notDone(subtask)
+                  ).length
+                }
+              </span>
+            </div>
+          ))
+        ) : (
+          <img
+            alt="assignee avatar"
+            className="avatar"
+            src={story.fields.assignee.avatarUrls["32x32"]}
+          />
+        )}
+      </section>
       <section className="story-details">
         <span className="issueid">{story.key}</span>
-        <img className="priority" src={story.fields.priority.iconUrl} />
+        <img
+          className="priority"
+          alt="priority icon"
+          src={story.fields.priority.iconUrl}
+        />
         <span className="storypoints">{story.fields.customfield_10806}</span>
       </section>
-      <br />
-      {Object.keys(groupedAssignees).length ? (
-        Object.keys(groupedAssignees).map((key: any, index) => (
-          <div className="avatar-with-count">
-            <img key={index} className="avatar" src={key} />
-            <span>{groupedAssignees[key].length}</span>
-          </div>
-        ))
-      ) : (
-        <img
-          className="avatar"
-          src={story.fields.assignee.avatarUrls["32x32"]}
-        />
-      )}
     </li>
   );
 };
+
+const UnassignedAvatar = () => {
+  return (
+    <svg
+      viewBox="0 0 128 128"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      className="avatar-unassigned"
+    >
+      <g className="sc-fNHLbd jTnqDb">
+        <circle cx="64" cy="64" r="64" />
+        <g>
+          <path d="M103,102.1388 C93.094,111.92 79.3504,118 64.1638,118 C48.8056,118 34.9294,111.768 25,101.7892 L25,95.2 C25,86.8096 31.981,80 40.6,80 L87.4,80 C96.019,80 103,86.8096 103,95.2 L103,102.1388 Z" />
+          <path d="M63.9961647,24 C51.2938136,24 41,34.2938136 41,46.9961647 C41,59.7061864 51.2938136,70 63.9961647,70 C76.6985159,70 87,59.7061864 87,46.9961647 C87,34.2938136 76.6985159,24 63.9961647,24" />
+        </g>
+      </g>
+    </svg>
+  );
+};
+
+function formatDate(ISOdate: Date | undefined) {
+  if (ISOdate === undefined) return "";
+  const date = new Date(ISOdate);
+  return `${date.getDate()} ${date.toLocaleString("en-us", {
+    month: "short"
+  })} ${date.getFullYear()} ${date.toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true
+  })}`;
+}
+
+function notDone(subtask: SubTask) {
+  return (
+    subtask.fields.status.name !== "Done" &&
+    subtask.fields.status.name !== "Closed"
+  );
+}
 
 function slugify(string: string) {
   const a = "àáäâãåèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;";
