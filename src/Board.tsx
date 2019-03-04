@@ -28,10 +28,8 @@ class Board extends Component<BoardProps, BoardState> {
     return (
       <div>
         <h2>
-          Stories for Board {this.props.match.params.id} ({
-            this.state.stories.length
-          }{" "}
-          stories)
+          Stories for Board {this.props.match.params.id} (
+          {this.state.stories.length} stories)
         </h2>
         {this.state.stories.length === 0 && <div>Loading...</div>}
         <ul>
@@ -56,16 +54,24 @@ const StoryCard = ({ story }: StoryProps) => {
     (subtask: any) =>
       subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
   );
-  console.log(groupedAssignees);
+  //console.log(groupedAssignees);
+  const epicColor =
+    (story.fields.epic && story.fields.epic.color.key) || "none";
   return (
-    <li
-      className={`status ${slugify(story.fields.status.name)}`}
-      key={story.id}
-    >
-      {story.fields.summary}
+    <li className="story" key={story.id}>
+      <section className="summary">{story.fields.summary}</section>
+      <section className={"epic"}>
+        <span className={epicColor + " epic-label"}>
+          {story.fields.epic && story.fields.epic.name}
+        </span>
+      </section>
       <br />
-      {story.fields.epic && story.fields.epic.name} {story.key}{" "}
-      {story.fields.customfield_10806} {story.fields.priority.name}
+      <section className="story-details">
+        <span className="issueid">{story.key}</span>
+        <img className="priority" src={story.fields.priority.iconUrl} />
+        <span className="storypoints">{story.fields.customfield_10806}</span>
+      </section>
+      <br />
       {Object.keys(groupedAssignees).length ? (
         Object.keys(groupedAssignees).map((key: any, index) => (
           <div className="avatar-with-count">
