@@ -173,14 +173,14 @@ select {
 
 .columns {
   display: grid;
-  grid-template-columns: 270px auto 270px;
-  grid-column-gap: 15px;
+  grid-template-columns: 288px auto 288px;
+  grid-column-gap: 10px;
   padding: 0 40px;
 }
 .todo-column, .inprogress-column, .done-column {
   list-style: none;
   background: #F4F5F7;
-  max-width: 270px;
+  max-width: 288px;
 }
 .inprogress-column {
   max-width: 100%;
