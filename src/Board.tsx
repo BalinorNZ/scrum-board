@@ -90,7 +90,23 @@ class Board extends Component<BoardProps, BoardState> {
               </div>
               <ul>
                 {inProgress.map((story: Story) => (
-                  <StoryCard key={story.id} story={story} />
+                  <div className="story-with-subtasks">
+                    <StoryCard key={story.id} story={story} />
+                    {story.fields.subtasks.length > 0 &&
+                      story.fields.subtasks
+                        .filter((subtask: SubTask) => notDone(subtask))
+                        .slice(0, 1)
+                        .map((subtask: SubTask) => (
+                          <div className="subtask-card">
+                            <p>{subtask.fields.summary}</p>
+                            <img
+                              alt="assignee avatar"
+                              className="avatar"
+                              src={subtask.fields.assignee.avatarUrls["32x32"]}
+                            />
+                          </div>
+                        ))}
+                  </div>
                 ))}
               </ul>
             </li>
