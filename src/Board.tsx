@@ -90,22 +90,36 @@ class Board extends Component<BoardProps, BoardState> {
               </div>
               <ul>
                 {inProgress.map((story: Story) => (
-                  <div className="story-with-subtasks">
+                  <div className="story-with-subtasks" key={story.id}>
                     <StoryCard key={story.id} story={story} />
-                    {story.fields.subtasks.length > 0 &&
-                      story.fields.subtasks
-                        .filter((subtask: SubTask) => notDone(subtask))
-                        .slice(0, 1)
-                        .map((subtask: SubTask) => (
-                          <div className="subtask-card">
-                            <p>{subtask.fields.summary}</p>
-                            <img
-                              alt="assignee avatar"
-                              className="avatar"
-                              src={subtask.fields.assignee.avatarUrls["32x32"]}
-                            />
-                          </div>
-                        ))}
+                    <div className="story-subtasks">
+                      {story.fields.subtasks.length > 0 &&
+                        story.fields.subtasks
+                          .filter((subtask: SubTask) => notDone(subtask))
+                          .slice(0, 4)
+                          .map((subtask: SubTask) => (
+                            <div
+                              key={subtask.id}
+                              className="subtask-card"
+                              title={subtask.fields.summary}
+                            >
+                              <div
+                                className={
+                                  "subtask-card-status " +
+                                  slugify(subtask.fields.status.name)
+                                }
+                              />
+                              <p>{subtask.fields.summary}</p>
+                              <img
+                                alt="assignee avatar"
+                                className="avatar"
+                                src={
+                                  subtask.fields.assignee.avatarUrls["24x24"]
+                                }
+                              />
+                            </div>
+                          ))}
+                    </div>
                   </div>
                 ))}
               </ul>
