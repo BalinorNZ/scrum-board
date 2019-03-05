@@ -3,11 +3,13 @@ import APIURL from "./ApiURL";
 import { RouteComponentProps } from "react-router";
 import { Issue, Sprint, Story, SubTask } from "./JiraInterfaces";
 import groupBy from "lodash.groupby";
+import sortBy from "lodash.sortby";
 import Spinner from "./Spinner";
 
 interface BoardState {
   stories: Issue[];
   sprint: Sprint | undefined;
+  allSubtasks: SubTask[];
 }
 
 interface BoardRouterProps {
@@ -16,7 +18,7 @@ interface BoardRouterProps {
 interface BoardProps extends RouteComponentProps<BoardRouterProps> {}
 
 class Board extends Component<BoardProps, BoardState> {
-  state = { stories: [], sprint: {} as Sprint };
+  state = { stories: [], sprint: {} as Sprint, allSubtasks: [] };
   componentDidMount() {
     fetch(`${APIURL}/board/${this.props.match.params.id}/sprint`, {
       method: "get"
@@ -29,18 +31,11 @@ class Board extends Component<BoardProps, BoardState> {
     })
       .then(res => res.json())
       .then(({ stories }) => {
-        // TODO: create allSubtasks list to use for global avatars filter with total subtasks counts
-        // let allSubtasks: any[] = [];
-        // stories.map((story: Story) =>
-        //   allSubtasks.concat(story.fields.subtasks)
-        // );
-        // console.log(allSubtasks);
-        //   groupBy(
-        //   stories.fields.subtasks,
-        //   (subtask: SubTask) =>
-        //     subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
-        // );
-        this.setState({ stories });
+        const allSubtasks = stories.reduce(
+          (acc: SubTask[], cur: Story) => acc.concat(cur.fields.subtasks),
+          []
+        );
+        this.setState({ stories, allSubtasks });
       });
   }
   render() {
@@ -60,15 +55,18 @@ class Board extends Component<BoardProps, BoardState> {
     return (
       <div className="board">
         <div className="board-header">
-          <span className="sprint-title">{this.state.sprint.name}</span>
-          <span className="story-count">
-            {this.state.stories.length} stories
-          </span>
-          <p className="sprint-dates">
-            <span>{formatDate(this.state.sprint.startDate)}</span>
-            <span className="divider">•</span>
-            <span>{formatDate(this.state.sprint.endDate)}</span>
-          </p>
+          <div>
+            <span className="sprint-title">{this.state.sprint.name}</span>
+            <span className="story-count">
+              {this.state.stories.length} stories
+            </span>
+            <p className="sprint-dates">
+              <span>{formatDate(this.state.sprint.startDate)}</span>
+              <span className="divider">•</span>
+              <span>{formatDate(this.state.sprint.endDate)}</span>
+            </p>
+          </div>
+          <Avatars subtasks={this.state.allSubtasks} />
         </div>
         {this.state.stories.length === 0 ? (
           <Spinner />
@@ -76,7 +74,7 @@ class Board extends Component<BoardProps, BoardState> {
           <ul className="columns">
             <li className="todo-column">
               <div className="column-header">
-                Sprint Backlog ({toDo.length})
+                Sprint Backlog ({toDo.length} stories) {sumStorypoints(toDo)}SP
               </div>
               <ul>
                 {toDo.map((story: Story) => (
@@ -86,46 +84,34 @@ class Board extends Component<BoardProps, BoardState> {
             </li>
             <li className="inprogress-column">
               <div className="column-header">
-                In Progress ({inProgress.length})
+                In Progress ({inProgress.length} stories){" "}
+                {sumStorypoints(inProgress)}SP
               </div>
               <ul>
                 {inProgress.map((story: Story) => (
                   <div className="story-with-subtasks" key={story.id}>
-                    <StoryCard key={story.id} story={story} />
-                    <div className="story-subtasks">
-                      {story.fields.subtasks.length > 0 &&
-                        story.fields.subtasks
-                          .filter((subtask: SubTask) => notDone(subtask))
-                          .slice(0, 4)
-                          .map((subtask: SubTask) => (
-                            <div
-                              key={subtask.id}
-                              className="subtask-card"
-                              title={subtask.fields.summary}
-                            >
-                              <div
-                                className={
-                                  "subtask-card-status " +
-                                  slugify(subtask.fields.status.name)
-                                }
-                              />
-                              <p>{subtask.fields.summary}</p>
-                              <img
-                                alt="assignee avatar"
-                                className="avatar"
-                                src={
-                                  subtask.fields.assignee.avatarUrls["24x24"]
-                                }
-                              />
-                            </div>
-                          ))}
+                    <StoryCard story={story} />
+                    <div className="story-subtask-groups">
+                      <StorySubtasks story={story} status={["to-do"]} />
+                      <div className="story-subtask-groups-separator" />
+                      <StorySubtasks
+                        story={story}
+                        status={["in-progress", "blocked"]}
+                      />
+                      <div className="story-subtask-groups-separator" />
+                      <StorySubtasks
+                        story={story}
+                        status={["done", "closed"]}
+                      />
                     </div>
                   </div>
                 ))}
               </ul>
             </li>
             <li className="done-column">
-              <div className="column-header">Done ({done.length})</div>
+              <div className="column-header">
+                Done ({done.length} stories) {sumStorypoints(done)}SP
+              </div>
               <ul>
                 {done.map((story: Story) => (
                   <StoryCard key={story.id} story={story} />
@@ -141,16 +127,53 @@ class Board extends Component<BoardProps, BoardState> {
 
 export default Board;
 
+interface StorySubtasksProps {
+  story: Story;
+  status: string[];
+}
+const StorySubtasks = ({ story, status }: StorySubtasksProps) => {
+  let subtasks =
+    story.fields.subtasks.length > 0
+      ? story.fields.subtasks.filter((subtask: SubTask) =>
+          status.find(status => status === slugify(subtask.fields.status.name))
+        )
+      : [];
+  if (status.some(s => s === "done" || s === "closed"))
+    subtasks = sortBy(
+      subtasks,
+      subtask => new Date(subtask.fields.resolutiondate)
+    )
+      .reverse()
+      .slice(0, 4);
+  return (
+    <div className="story-subtasks">
+      {subtasks.map((subtask: SubTask) => (
+        <div
+          key={subtask.id}
+          className="subtask-card"
+          title={subtask.fields.summary}
+        >
+          <div
+            className={
+              "subtask-card-status " + slugify(subtask.fields.status.name)
+            }
+          />
+          <p>{subtask.fields.summary}</p>
+          <img
+            alt="assignee avatar"
+            className="avatar"
+            src={subtask.fields.assignee.avatarUrls["24x24"]}
+          />
+        </div>
+      ))}
+    </div>
+  );
+};
+
 interface StoryProps {
   story: Story;
 }
-
 const StoryCard = ({ story }: StoryProps) => {
-  const groupedSubtasks = groupBy(
-    story.fields.subtasks,
-    (subtask: SubTask) =>
-      subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
-  );
   const epicColor =
     (story.fields.epic && story.fields.epic.color.key) || "none";
   return (
@@ -166,28 +189,8 @@ const StoryCard = ({ story }: StoryProps) => {
         )}
       </section>
       <section className="avatars">
-        {Object.keys(groupedSubtasks).length ? (
-          Object.keys(groupedSubtasks).map((key: any, index) => (
-            <div key={index} className="avatar-with-count">
-              {key === "null" ? (
-                <UnassignedAvatar />
-              ) : (
-                <img
-                  key={index}
-                  alt="assignee avatar"
-                  className="avatar"
-                  src={key}
-                />
-              )}
-              <span>
-                {
-                  groupedSubtasks[key].filter((subtask: SubTask) =>
-                    notDone(subtask)
-                  ).length
-                }
-              </span>
-            </div>
-          ))
+        {Object.keys(story.fields.subtasks).length ? (
+          <Avatars subtasks={story.fields.subtasks} />
         ) : (
           <img
             alt="assignee avatar"
@@ -206,6 +209,42 @@ const StoryCard = ({ story }: StoryProps) => {
         <span className="storypoints">{story.fields.customfield_10806}</span>
       </section>
     </li>
+  );
+};
+
+interface AvatarsProps {
+  subtasks: SubTask[];
+}
+const Avatars = ({ subtasks }: AvatarsProps) => {
+  const groupedSubtasks = groupBy(
+    subtasks,
+    (subtask: SubTask) =>
+      subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
+  );
+  return (
+    <div>
+      {Object.keys(groupedSubtasks).map((key: any, index) => (
+        <div key={index} className="avatar-with-count">
+          {key === "null" ? (
+            <UnassignedAvatar />
+          ) : (
+            <img
+              key={index}
+              alt="assignee avatar"
+              className="avatar"
+              src={key}
+            />
+          )}
+          <span>
+            {
+              groupedSubtasks[key].filter((subtask: SubTask) =>
+                notDone(subtask)
+              ).length
+            }
+          </span>
+        </div>
+      ))}
+    </div>
   );
 };
 
@@ -228,6 +267,13 @@ const UnassignedAvatar = () => {
     </svg>
   );
 };
+
+function sumStorypoints(stories: Story[]) {
+  return stories.reduce(
+    (acc: number, cur: Story) => acc + cur.fields.customfield_10806,
+    0
+  );
+}
 
 function formatDate(ISOdate: Date | undefined) {
   if (ISOdate === undefined) return "";

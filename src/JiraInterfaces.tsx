@@ -85,7 +85,7 @@ interface StoryFields extends IssueFields {
   subtasks: SubTask[];
 }
 interface SubtaskFields extends IssueFields {
-  resolutiondate?: Date;
+  resolutiondate: Date;
   resolution?: { name: string };
   parent?: Issue;
 }
