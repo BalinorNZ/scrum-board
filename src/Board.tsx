@@ -178,7 +178,7 @@ const StoryCard = ({ story }: StoryProps) => {
     (story.fields.epic && story.fields.epic.color.key) || "none";
   return (
     <li className="story" key={story.id}>
-      <section>
+      <section className="story-summary-section">
         <p className="summary">{story.fields.summary}</p>
         {story.fields.epic && (
           <p className="epic">
