@@ -10,6 +10,7 @@ interface BoardState {
   stories: Issue[];
   sprint: Sprint | undefined;
   allSubtasks: SubTask[];
+  selectedAvatars: string[];
 }
 
 interface BoardRouterProps {
@@ -18,7 +19,12 @@ interface BoardRouterProps {
 interface BoardProps extends RouteComponentProps<BoardRouterProps> {}
 
 class Board extends Component<BoardProps, BoardState> {
-  state = { stories: [], sprint: {} as Sprint, allSubtasks: [] };
+  state = {
+    stories: [],
+    sprint: {} as Sprint,
+    allSubtasks: [],
+    selectedAvatars: []
+  };
   componentDidMount() {
     fetch(`${APIURL}/board/${this.props.match.params.id}/sprint`, {
       method: "get"
@@ -38,6 +44,16 @@ class Board extends Component<BoardProps, BoardState> {
         this.setState({ stories, allSubtasks });
       });
   }
+  selectAvatar = (name: string) => {
+    const selectedAvatars: string[] = this.state.selectedAvatars;
+    selectedAvatars.includes(name)
+      ? this.setState({
+          selectedAvatars: selectedAvatars.filter(avatar => avatar !== name)
+        })
+      : this.setState({
+          selectedAvatars: [...this.state.selectedAvatars, name]
+        });
+  };
   render() {
     const inProgress = this.state.stories.filter(
       (story: Story) =>
@@ -66,7 +82,11 @@ class Board extends Component<BoardProps, BoardState> {
               <span>{formatDate(this.state.sprint.endDate)}</span>
             </p>
           </div>
-          <Avatars subtasks={this.state.allSubtasks} />
+          <Avatars
+            selectAvatar={this.selectAvatar}
+            selectedAvatars={this.state.selectedAvatars}
+            subtasks={this.state.allSubtasks}
+          />
         </div>
         {this.state.stories.length === 0 ? (
           <Spinner />
@@ -214,8 +234,10 @@ const StoryCard = ({ story }: StoryProps) => {
 
 interface AvatarsProps {
   subtasks: SubTask[];
+  selectAvatar?: (name: string) => void;
+  selectedAvatars?: string[];
 }
-const Avatars = ({ subtasks }: AvatarsProps) => {
+const Avatars = ({ subtasks, selectAvatar, selectedAvatars }: AvatarsProps) => {
   const groupedSubtasks = groupBy(
     subtasks,
     (subtask: SubTask) =>
@@ -224,7 +246,21 @@ const Avatars = ({ subtasks }: AvatarsProps) => {
   return (
     <div>
       {Object.keys(groupedSubtasks).map((key: any, index) => (
-        <div key={index} className="avatar-with-count">
+        <div
+          key={index}
+          className={
+            selectedAvatars &&
+            selectedAvatars.includes(
+              groupedSubtasks[key][0].fields.assignee.displayName
+            )
+              ? "avatar-with-count selected"
+              : "avatar-with-count"
+          }
+          onClick={() =>
+            selectAvatar &&
+            selectAvatar(groupedSubtasks[key][0].fields.assignee.displayName)
+          }
+        >
           {key === "null" ? (
             <UnassignedAvatar />
           ) : (

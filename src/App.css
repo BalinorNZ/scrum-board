@@ -68,9 +68,25 @@ select {
   fill: rgb(255, 255, 255);
 }
 .avatar-with-count {
-  display: inline;
+  display: inline-block;
   position: relative;
-  margin-right: 7px;
+  margin-right: 5px;
+  cursor: pointer;
+  transition: transform 0.1s ease-out 0s;
+}
+.avatar-with-count:hover {
+  transform: translateY(-4px);
+  opacity: 0.6;
+}
+.avatar-with-count img {
+  padding: 2px;
+}
+.avatar-with-count.selected img {
+  border-radius: 50%;
+  border-width: 2px;
+  border-style: solid;
+  border-image: initial;
+  border-color: rgb(0, 82, 204);
 }
 .avatar-with-count span {
   position: absolute;
