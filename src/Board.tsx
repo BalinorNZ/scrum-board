@@ -7,8 +7,8 @@ import sortBy from "lodash.sortby";
 import Spinner from "./Spinner";
 
 interface BoardState {
-  stories: Issue[];
-  sprint: Sprint | undefined;
+  stories: Story[];
+  sprint: Sprint;
   allSubtasks: SubTask[];
   selectedAvatars: string[];
 }
@@ -19,7 +19,7 @@ interface BoardRouterProps {
 interface BoardProps extends RouteComponentProps<BoardRouterProps> {}
 
 class Board extends Component<BoardProps, BoardState> {
-  state = {
+  state: Readonly<BoardState> = {
     stories: [],
     sprint: {} as Sprint,
     allSubtasks: [],
@@ -45,25 +45,39 @@ class Board extends Component<BoardProps, BoardState> {
       });
   }
   selectAvatar = (name: string) => {
-    const selectedAvatars: string[] = this.state.selectedAvatars;
-    selectedAvatars.includes(name)
+    this.state.selectedAvatars.includes(name)
       ? this.setState({
-          selectedAvatars: selectedAvatars.filter(avatar => avatar !== name)
+          selectedAvatars: this.state.selectedAvatars.filter(
+            avatar => avatar !== name
+          )
         })
       : this.setState({
           selectedAvatars: [...this.state.selectedAvatars, name]
         });
   };
   render() {
-    const inProgress = this.state.stories.filter(
+    const storiesFilteredByAssignees = this.state.selectedAvatars.length
+      ? this.state.stories.filter((story: Story) => {
+          const storyAssignees = [
+            ...story.fields.subtasks.map(
+              subtask => subtask.fields.assignee.displayName
+            ),
+            story.fields.assignee.displayName
+          ];
+          return storyAssignees.some((assignee: string) =>
+            this.state.selectedAvatars.includes(assignee)
+          );
+        })
+      : this.state.stories;
+    const inProgress = storiesFilteredByAssignees.filter(
       (story: Story) =>
         story.fields.status.name === "In Progress" ||
         story.fields.status.name === "Blocked"
     );
-    const toDo = this.state.stories.filter(
+    const toDo = storiesFilteredByAssignees.filter(
       (story: Story) => story.fields.status.name === "To Do"
     );
-    const done = this.state.stories.filter(
+    const done = storiesFilteredByAssignees.filter(
       (story: Story) =>
         story.fields.status.name === "Done" ||
         story.fields.status.name === "Closed"
