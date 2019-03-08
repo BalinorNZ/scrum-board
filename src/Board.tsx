@@ -25,6 +25,7 @@ class Board extends Component<BoardProps, BoardState> {
     allSubtasks: [],
     selectedAvatars: []
   };
+  timer: null | number = null;
   componentDidMount() {
     fetch(`${APIURL}/board/${this.props.match.params.id}/sprint`, {
       method: "get"
@@ -32,6 +33,14 @@ class Board extends Component<BoardProps, BoardState> {
       .then(res => res.json())
       .then(({ sprint }) => this.setState({ sprint }));
 
+    this.fetchStories();
+    setInterval(() => this.fetchStories(), 20000);
+  }
+  componentWillUnmount() {
+    if (this.timer != null) clearInterval(this.timer);
+    this.timer = null;
+  }
+  fetchStories() {
     fetch(`${APIURL}/board/${this.props.match.params.id}`, {
       method: "get"
     })
