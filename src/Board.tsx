@@ -121,7 +121,11 @@ class Board extends Component<BoardProps, BoardState> {
               </div>
               <ul>
                 {toDo.map((story: Story) => (
-                  <StoryCard key={story.id} story={story} />
+                  <StoryCard
+                    key={story.id}
+                    story={story}
+                    selectedAvatars={this.state.selectedAvatars}
+                  />
                 ))}
               </ul>
             </li>
@@ -133,18 +137,27 @@ class Board extends Component<BoardProps, BoardState> {
               <ul>
                 {inProgress.map((story: Story) => (
                   <div className="story-with-subtasks" key={story.id}>
-                    <StoryCard story={story} />
+                    <StoryCard
+                      story={story}
+                      selectedAvatars={this.state.selectedAvatars}
+                    />
                     <div className="story-subtask-groups">
-                      <StorySubtasks story={story} status={["to-do"]} />
+                      <StorySubtasks
+                        story={story}
+                        status={["to-do"]}
+                        selectedAvatars={this.state.selectedAvatars}
+                      />
                       <div className="story-subtask-groups-separator" />
                       <StorySubtasks
                         story={story}
                         status={["in-progress", "blocked"]}
+                        selectedAvatars={this.state.selectedAvatars}
                       />
                       <div className="story-subtask-groups-separator" />
                       <StorySubtasks
                         story={story}
                         status={["done", "closed"]}
+                        selectedAvatars={this.state.selectedAvatars}
                       />
                     </div>
                   </div>
@@ -157,7 +170,11 @@ class Board extends Component<BoardProps, BoardState> {
               </div>
               <ul>
                 {done.map((story: Story) => (
-                  <StoryCard key={story.id} story={story} />
+                  <StoryCard
+                    key={story.id}
+                    story={story}
+                    selectedAvatars={this.state.selectedAvatars}
+                  />
                 ))}
               </ul>
             </li>
@@ -173,8 +190,13 @@ export default Board;
 interface StorySubtasksProps {
   story: Story;
   status: string[];
+  selectedAvatars: string[];
 }
-const StorySubtasks = ({ story, status }: StorySubtasksProps) => {
+const StorySubtasks = ({
+  story,
+  status,
+  selectedAvatars
+}: StorySubtasksProps) => {
   let subtasks =
     story.fields.subtasks.length > 0
       ? story.fields.subtasks.filter((subtask: SubTask) =>
@@ -193,7 +215,11 @@ const StorySubtasks = ({ story, status }: StorySubtasksProps) => {
       {subtasks.map((subtask: SubTask) => (
         <div
           key={subtask.id}
-          className="subtask-card"
+          className={
+            selectedAvatars.includes(subtask.fields.assignee.displayName)
+              ? "subtask-card selected"
+              : "subtask-card"
+          }
           title={subtask.fields.summary}
         >
           <div
@@ -215,8 +241,9 @@ const StorySubtasks = ({ story, status }: StorySubtasksProps) => {
 
 interface StoryProps {
   story: Story;
+  selectedAvatars: string[];
 }
-const StoryCard = ({ story }: StoryProps) => {
+const StoryCard = ({ story, selectedAvatars }: StoryProps) => {
   const epicColor =
     (story.fields.epic && story.fields.epic.color.key) || "none";
   return (
@@ -233,7 +260,10 @@ const StoryCard = ({ story }: StoryProps) => {
       </section>
       <section className="avatars">
         {Object.keys(story.fields.subtasks).length ? (
-          <Avatars subtasks={story.fields.subtasks} />
+          <Avatars
+            subtasks={story.fields.subtasks}
+            selectedAvatars={selectedAvatars}
+          />
         ) : (
           <img
             alt="assignee avatar"
@@ -266,6 +296,7 @@ const Avatars = ({ subtasks, selectAvatar, selectedAvatars }: AvatarsProps) => {
     (subtask: SubTask) =>
       subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
   );
+  console.log(selectedAvatars);
   return (
     <div>
       {Object.keys(groupedSubtasks).map((key: any, index) => (

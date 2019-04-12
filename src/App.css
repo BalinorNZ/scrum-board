@@ -278,6 +278,12 @@ select {
 .subtask-card-status.blocked {
   background-color: rgb(234, 67, 53);
 }
+.subtask-card.selected {
+  border-width: 2px;
+  border-style: solid;
+  border-image: initial;
+  border-color: rgba(0, 82, 204, 0.7);
+}
 
 .subtask-card p {
   margin: 0;
@@ -317,10 +323,11 @@ select {
 /*border-color: #FFE380;*/
 /*background-color: #FFE380;*/
 /*}*/
-/*.color_1 {*/
-/*border-color: #FFE380;*/
-/*background-color: #FFE380;*/
-/*}*/
+.color_1 {
+  border-color: #42526e;
+  background-color: #42526e;
+  color: white;
+}
 .color_2 {
   border-color: #ffc400;
   background-color: #ffc400;
@@ -333,10 +340,10 @@ select {
   border-color: #4c9aff;
   background-color: #4c9aff;
 }
-/*.color_5 {*/
-/*border-color: #FFE380;*/
-/*background-color: #FFE380;*/
-/*}*/
+.color_5 {
+  border-color: #00c7e6;
+  background-color: #00c7e6;
+}
 .color_6 {
   border-color: #79f2c0;
   background-color: #79f2c0;
@@ -353,22 +360,22 @@ select {
   border-color: #ffbdad;
   background-color: #ffbdad;
 }
-/*.color_10 {*/
-/*border-color: #FFE380;*/
-/*background-color: #FFE380;*/
-/*}*/
+.color_10 {
+  border-color: #b3d4ff;
+  background-color: #b3d4ff;
+}
 .color_11 {
   border-color: #79e2f2;
   background-color: #79e2f2;
 }
-/*.color_12 {*/
-/*border-color: #FFE380;*/
-/*background-color: #FFE380;*/
-/*}*/
-/*.color_13 {*/
-/*border-color: #FFE380;*/
-/*background-color: #FFE380;*/
-/*}*/
+.color_12 {
+  border-color: #ebecf0;
+  background-color: #ebecf0;
+}
+.color_13 {
+  border-color: #57d9a3;
+  background-color: #57d9a3;
+}
 .color_14 {
   border-color: #ff8f73;
   background-color: #ff8f73;
