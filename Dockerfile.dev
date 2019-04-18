@@ -1,0 +1,8 @@
+FROM node:8-alpine as build-deps
+
+WORKDIR /app
+COPY . .
+RUN yarn
+COPY . ./
+
+CMD ["yarn", "start"]
