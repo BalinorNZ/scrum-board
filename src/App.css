@@ -81,6 +81,10 @@ select {
 .avatar-with-count img {
   padding: 2px;
 }
+.board-header .avatar-with-count img {
+  width: 36px;
+  height: 36px;
+}
 .avatar-with-count.selected img {
   border-radius: 50%;
   border-width: 2px;
@@ -124,6 +128,10 @@ select {
 }
 .story:hover {
   background-color: #eee;
+}
+.story img.avatar {
+  width: 36px;
+  height: 36px;
 }
 .story-summary-section {
   max-width: 250px;
@@ -299,6 +307,8 @@ select {
 .subtask-card img {
   justify-self: end;
   align-self: center;
+  width: 24px;
+  height: 24px;
 }
 .subtask-card:hover {
   background-color: #eee;
