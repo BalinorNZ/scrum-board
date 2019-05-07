@@ -61,7 +61,7 @@ interface IssueFields {
   status: Status;
   summary: string;
   description: string;
-  assignee: Actor;
+  assignee?: Actor;
   created?: Date;
   creator: Actor;
   labels?: string[];

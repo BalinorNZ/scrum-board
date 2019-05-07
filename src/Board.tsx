@@ -69,12 +69,15 @@ class Board extends Component<BoardProps, BoardState> {
       ? this.state.stories.filter((story: Story) => {
           const storyAssignees = [
             ...story.fields.subtasks.map(
-              subtask => subtask.fields.assignee.displayName
+              subtask =>
+                subtask.fields.assignee && subtask.fields.assignee.displayName
             ),
-            story.fields.assignee.displayName
+            story.fields.assignee && story.fields.assignee.displayName
           ];
-          return storyAssignees.some((assignee: string) =>
-            this.state.selectedAvatars.includes(assignee)
+          return storyAssignees.some(
+            (assignee?: string) =>
+              assignee !== undefined &&
+              this.state.selectedAvatars.includes(assignee)
           );
         })
       : this.state.stories;
@@ -216,6 +219,7 @@ const StorySubtasks = ({
         <div
           key={subtask.id}
           className={
+            subtask.fields.assignee &&
             selectedAvatars.includes(subtask.fields.assignee.displayName)
               ? "subtask-card selected"
               : "subtask-card"
@@ -229,9 +233,12 @@ const StorySubtasks = ({
           />
           <p>{subtask.fields.summary}</p>
           <img
-            alt="assignee avatar"
+            alt=""
             className="avatar"
-            src={subtask.fields.assignee.avatarUrls["24x24"]}
+            src={
+              subtask.fields.assignee &&
+              subtask.fields.assignee.avatarUrls["24x24"]
+            }
           />
         </div>
       ))}
@@ -268,7 +275,9 @@ const StoryCard = ({ story, selectedAvatars }: StoryProps) => {
           <img
             alt="assignee avatar"
             className="avatar"
-            src={story.fields.assignee.avatarUrls["32x32"]}
+            src={
+              story.fields.assignee && story.fields.assignee.avatarUrls["32x32"]
+            }
           />
         )}
       </section>
@@ -299,41 +308,40 @@ const Avatars = ({ subtasks, selectAvatar, selectedAvatars }: AvatarsProps) => {
   console.log(selectedAvatars);
   return (
     <div>
-      {Object.keys(groupedSubtasks).map((key: any, index) => (
-        <div
-          key={index}
-          className={
-            selectedAvatars &&
-            selectedAvatars.includes(
-              groupedSubtasks[key][0].fields.assignee.displayName
-            )
-              ? "avatar-with-count selected"
-              : "avatar-with-count"
-          }
-          onClick={() =>
-            selectAvatar &&
-            selectAvatar(groupedSubtasks[key][0].fields.assignee.displayName)
-          }
-        >
-          {key === "null" ? (
-            <UnassignedAvatar />
-          ) : (
-            <img
-              key={index}
-              alt="assignee avatar"
-              className="avatar"
-              src={key}
-            />
-          )}
-          <span>
-            {
-              groupedSubtasks[key].filter((subtask: SubTask) =>
-                notDone(subtask)
-              ).length
+      {Object.keys(groupedSubtasks).map((key: any, index) => {
+        const assignee = groupedSubtasks[key][0].fields.assignee || {
+          displayName: ""
+        };
+        return (
+          <div
+            key={index}
+            className={
+              selectedAvatars && selectedAvatars.includes(assignee.displayName)
+                ? "avatar-with-count selected"
+                : "avatar-with-count"
             }
-          </span>
-        </div>
-      ))}
+            onClick={() => selectAvatar && selectAvatar(assignee.displayName)}
+          >
+            {key === "null" ? (
+              <UnassignedAvatar />
+            ) : (
+              <img
+                key={index}
+                alt="assignee avatar"
+                className="avatar"
+                src={key}
+              />
+            )}
+            <span>
+              {
+                groupedSubtasks[key].filter((subtask: SubTask) =>
+                  notDone(subtask)
+                ).length
+              }
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 };
