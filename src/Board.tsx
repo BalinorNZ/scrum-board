@@ -1,10 +1,26 @@
 import React, { Component } from "react";
 import APIURL from "./ApiURL";
 import { RouteComponentProps } from "react-router";
-import { Issue, Sprint, Story, SubTask } from "./JiraInterfaces";
+import { Sprint, Story, SubTask } from "./JiraInterfaces";
 import groupBy from "lodash.groupby";
 import sortBy from "lodash.sortby";
 import Spinner from "./Spinner";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DraggableProvidedDraggableProps,
+  DraggableProvidedDragHandleProps,
+  DropResult
+} from "react-beautiful-dnd";
+
+const STATUS = {
+  todo: "10010",
+  inProgress: "3",
+  done: "10009",
+  blocked: "10909",
+  closed: "11111"
+};
 
 interface BoardState {
   stories: Story[];
@@ -34,7 +50,8 @@ class Board extends Component<BoardProps, BoardState> {
       .then(({ sprint }) => this.setState({ sprint }));
 
     this.fetchStories();
-    setInterval(() => this.fetchStories(), 20000);
+    // TODO: disable auto-refresh during dev
+    //setInterval(() => this.fetchStories(), 20000);
   }
   componentWillUnmount() {
     if (this.timer != null) clearInterval(this.timer);
@@ -64,6 +81,39 @@ class Board extends Component<BoardProps, BoardState> {
           selectedAvatars: [...this.state.selectedAvatars, name]
         });
   };
+  onDragEnd = (result: DropResult) => {
+    const { destination, source, draggableId } = result;
+    if (!destination) return;
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    )
+      return;
+    // TODO: add a way for stories to be marked as blocked
+    let allSubtasks = this.state.allSubtasks;
+    let index = allSubtasks.findIndex(s => s.id === draggableId);
+    allSubtasks[index].fields.status.id = destination.droppableId;
+
+    // TODO: merge this with the STATUS const somehow
+    const TRANSITIONS: any = {
+      "10010": "11",
+      "3": "21",
+      "10009": "31",
+      "10909": "71",
+      "11111": "11111"
+    };
+    fetch(`${APIURL}/issue/${allSubtasks[index].id}/transitions`, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        transition: { id: TRANSITIONS[destination.droppableId] }
+      })
+    })
+      .then(res => res.json())
+      .then(status => status === 204 && this.setState({ allSubtasks }));
+  };
   render() {
     const storiesFilteredByAssignees = this.state.selectedAvatars.length
       ? this.state.stories.filter((story: Story) => {
@@ -83,16 +133,16 @@ class Board extends Component<BoardProps, BoardState> {
       : this.state.stories;
     const inProgress = storiesFilteredByAssignees.filter(
       (story: Story) =>
-        story.fields.status.name === "In Progress" ||
-        story.fields.status.name === "Blocked"
+        story.fields.status.id === STATUS.inProgress ||
+        story.fields.status.id === STATUS.blocked
     );
     const toDo = storiesFilteredByAssignees.filter(
-      (story: Story) => story.fields.status.name === "To Do"
+      (story: Story) => story.fields.status.id === STATUS.todo
     );
     const done = storiesFilteredByAssignees.filter(
       (story: Story) =>
-        story.fields.status.name === "Done" ||
-        story.fields.status.name === "Closed"
+        story.fields.status.id === STATUS.done ||
+        story.fields.status.id === STATUS.closed
     );
     return (
       <div className="board">
@@ -144,25 +194,48 @@ class Board extends Component<BoardProps, BoardState> {
                       story={story}
                       selectedAvatars={this.state.selectedAvatars}
                     />
-                    <div className="story-subtask-groups">
-                      <StorySubtasks
-                        story={story}
-                        status={["to-do"]}
-                        selectedAvatars={this.state.selectedAvatars}
-                      />
-                      <div className="story-subtask-groups-separator" />
-                      <StorySubtasks
-                        story={story}
-                        status={["in-progress", "blocked"]}
-                        selectedAvatars={this.state.selectedAvatars}
-                      />
-                      <div className="story-subtask-groups-separator" />
-                      <StorySubtasks
-                        story={story}
-                        status={["done", "closed"]}
-                        selectedAvatars={this.state.selectedAvatars}
-                      />
-                    </div>
+                    <DragDropContext onDragEnd={this.onDragEnd}>
+                      <div className="story-subtask-groups">
+                        <Droppable droppableId={STATUS.todo}>
+                          {provided => (
+                            <StorySubtasks
+                              innerRef={provided.innerRef}
+                              placeholder={provided.placeholder}
+                              {...provided.droppableProps}
+                              story={story}
+                              status={[STATUS.todo]}
+                              selectedAvatars={this.state.selectedAvatars}
+                            />
+                          )}
+                        </Droppable>
+                        <div className="story-subtask-groups-separator" />
+                        <Droppable droppableId={STATUS.inProgress}>
+                          {provided => (
+                            <StorySubtasks
+                              innerRef={provided.innerRef}
+                              placeholder={provided.placeholder}
+                              {...provided.droppableProps}
+                              story={story}
+                              status={[STATUS.inProgress, STATUS.blocked]}
+                              selectedAvatars={this.state.selectedAvatars}
+                            />
+                          )}
+                        </Droppable>
+                        <div className="story-subtask-groups-separator" />
+                        <Droppable droppableId={STATUS.done}>
+                          {provided => (
+                            <StorySubtasks
+                              innerRef={provided.innerRef}
+                              placeholder={provided.placeholder}
+                              {...provided.droppableProps}
+                              story={story}
+                              status={[STATUS.done, STATUS.closed]}
+                              selectedAvatars={this.state.selectedAvatars}
+                            />
+                          )}
+                        </Droppable>
+                      </div>
+                    </DragDropContext>
                   </div>
                 ))}
               </ul>
@@ -194,57 +267,88 @@ interface StorySubtasksProps {
   story: Story;
   status: string[];
   selectedAvatars: string[];
+  placeholder?: React.ReactElement<HTMLElement> | null;
+  innerRef: any;
 }
-const StorySubtasks = ({
-  story,
-  status,
-  selectedAvatars
-}: StorySubtasksProps) => {
-  let subtasks =
-    story.fields.subtasks.length > 0
-      ? story.fields.subtasks.filter((subtask: SubTask) =>
-          status.find(status => status === slugify(subtask.fields.status.name))
-        )
-      : [];
-  if (status.some(s => s === "done" || s === "closed"))
-    subtasks = sortBy(
-      subtasks,
-      subtask => new Date(subtask.fields.resolutiondate)
-    )
-      .reverse()
-      .slice(0, 4);
-  return (
-    <div className="story-subtasks">
-      {subtasks.map((subtask: SubTask) => (
+class StorySubtasks extends Component<StorySubtasksProps> {
+  render() {
+    const { story, status, selectedAvatars, placeholder } = this.props;
+    let subtasks =
+      story.fields.subtasks.length > 0
+        ? story.fields.subtasks.filter((subtask: SubTask) =>
+            status.find(status => status === subtask.fields.status.id)
+          )
+        : [];
+    if (status.some(s => s === STATUS.done || s === STATUS.closed))
+      subtasks = sortBy(
+        subtasks,
+        subtask => new Date(subtask.fields.resolutiondate)
+      )
+        .reverse()
+        .slice(0, 4);
+    return (
+      <div className="story-subtasks" ref={this.props.innerRef}>
+        {subtasks.map((subtask: SubTask, index) => (
+          <Draggable draggableId={subtask.id} index={index} key={subtask.id}>
+            {provided => (
+              <StorySubTask
+                draggableProps={provided.draggableProps}
+                dragHandleProps={provided.dragHandleProps}
+                innerRef={provided.innerRef}
+                subtask={subtask}
+                selectedAvatars={selectedAvatars}
+              />
+            )}
+          </Draggable>
+        ))}
+        {placeholder}
+      </div>
+    );
+  }
+}
+
+interface StorySubTaskProps {
+  subtask: SubTask;
+  selectedAvatars: string[];
+  innerRef: any;
+  draggableProps: DraggableProvidedDraggableProps | null;
+  dragHandleProps: DraggableProvidedDragHandleProps | null;
+}
+class StorySubTask extends Component<StorySubTaskProps> {
+  render() {
+    const { subtask, selectedAvatars } = this.props;
+    return (
+      <div
+        {...this.props.draggableProps}
+        {...this.props.dragHandleProps}
+        ref={this.props.innerRef}
+        key={subtask.id}
+        className={
+          subtask.fields.assignee &&
+          selectedAvatars.includes(subtask.fields.assignee.displayName)
+            ? "subtask-card selected"
+            : "subtask-card"
+        }
+        title={subtask.fields.summary}
+      >
         <div
-          key={subtask.id}
           className={
-            subtask.fields.assignee &&
-            selectedAvatars.includes(subtask.fields.assignee.displayName)
-              ? "subtask-card selected"
-              : "subtask-card"
+            "subtask-card-status status-id-" + subtask.fields.status.id
           }
-          title={subtask.fields.summary}
-        >
-          <div
-            className={
-              "subtask-card-status " + slugify(subtask.fields.status.name)
-            }
-          />
-          <p>{subtask.fields.summary}</p>
-          <img
-            alt=""
-            className="avatar"
-            src={
-              subtask.fields.assignee &&
-              subtask.fields.assignee.avatarUrls["24x24"]
-            }
-          />
-        </div>
-      ))}
-    </div>
-  );
-};
+        />
+        <p>{subtask.fields.summary}</p>
+        <img
+          alt=""
+          className="avatar"
+          src={
+            subtask.fields.assignee &&
+            subtask.fields.assignee.avatarUrls["24x24"]
+          }
+        />
+      </div>
+    );
+  }
+}
 
 interface StoryProps {
   story: Story;
@@ -255,6 +359,12 @@ const StoryCard = ({ story, selectedAvatars }: StoryProps) => {
     (story.fields.epic && story.fields.epic.color.key) || "none";
   return (
     <li className="story" key={story.id}>
+      <div className="story-menu-toggle">...</div>
+      <ul className="story-menu">
+        <li>To-do</li>
+        <li>In Progress</li>
+        <li>Done</li>
+      </ul>
       <section className="story-summary-section">
         <p className="summary">{story.fields.summary}</p>
         {story.fields.epic && (
@@ -305,7 +415,6 @@ const Avatars = ({ subtasks, selectAvatar, selectedAvatars }: AvatarsProps) => {
     (subtask: SubTask) =>
       subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
   );
-  console.log(selectedAvatars);
   return (
     <div>
       {Object.keys(groupedSubtasks).map((key: any, index) => {
@@ -387,8 +496,8 @@ function formatDate(ISOdate: Date | undefined) {
 
 function notDone(subtask: SubTask) {
   return (
-    subtask.fields.status.name !== "Done" &&
-    subtask.fields.status.name !== "Closed"
+    subtask.fields.status.id !== STATUS.done &&
+    subtask.fields.status.id !== STATUS.closed
   );
 }
 
@@ -402,8 +511,8 @@ function slugify(string: string) {
     .replace(/\s+/g, "-") // Replace spaces with
     .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
     .replace(/&/g, "-and-") // Replace & with ‘and’
-    .replace(/[^\w\-]+/g, "") // Remove all non-word characters
-    .replace(/\-\-+/g, "-") // Replace multiple — with single -
+    .replace(/[^\w-]+/g, "") // Remove all non-word characters
+    .replace(/--+/g, "-") // Replace multiple — with single -
     .replace(/^-+/, "") // Trim — from start of text
     .replace(/-+$/, ""); // Trim — from end of text
 }

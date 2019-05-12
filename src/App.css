@@ -114,7 +114,7 @@ select {
   border: 1px solid #ccc;
   border-radius: 2px;
   color: #333;
-  cursor: move;
+  /*cursor: move;*/
   font-size: 14px;
   margin: 8px 8px;
   padding: 10px;
@@ -143,8 +143,44 @@ select {
   max-height: 4.28571429em;
   overflow: hidden;
   margin-bottom: 5px;
+  padding-right: 20px;
   font-size: 16px;
   font-weight: 400;
+}
+.story-menu-toggle {
+  position: absolute;
+  right: 10px;
+  top: -10px;
+  z-index: 5;
+  font-size: 24px;
+  cursor: pointer;
+  display: block;
+  font-weight: bold;
+  color: rgba(9, 30, 66, 0.65);
+}
+.story-menu-toggle:hover {
+  opacity: 1;
+  color: black;
+}
+.story-menu {
+  position: absolute;
+  display: none;
+  right: 10px;
+  top: 25px;
+  color: #ccc;
+  padding: 5px;
+  padding-left: 5px !important;
+  background-color: rgba(9, 30, 66, 0.65);
+  text-align: right;
+  z-index: 6;
+  list-style: none;
+}
+.story-menu li:hover {
+  cursor: pointer;
+  color: white;
+}
+.story-menu.open {
+  display: block;
 }
 
 .epic {
@@ -274,16 +310,16 @@ select {
   display: grid;
   grid-template-columns: 3px auto 30px;
 }
-.subtask-card-status.in-progress {
+.subtask-card-status.status-id-3 {
   background-color: rgb(66, 133, 244);
 }
-.subtask-card-status.done {
+.subtask-card-status.status-id-10009 {
   background-color: rgb(52, 168, 83);
 }
-.subtask-card-status.to-do {
+.subtask-card-status.status-id-10010 {
   background-color: #ccc;
 }
-.subtask-card-status.blocked {
+.subtask-card-status.status-id-10909 {
   background-color: rgb(234, 67, 53);
 }
 .subtask-card.selected {
