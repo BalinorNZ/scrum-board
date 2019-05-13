@@ -3,17 +3,18 @@ import APIURL from "./ApiURL";
 import { RouteComponentProps } from "react-router";
 import { Sprint, STATUS, Story, SubTask } from "./JiraInterfaces";
 import Spinner from "./Spinner";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DraggableProvidedDraggableProps,
-  DraggableProvidedDragHandleProps,
-  DropResult
-} from "react-beautiful-dnd";
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import StorySubTasks from "./StorySubTasks";
 import StoryCard from "./StoryCard";
 import Avatars from "./Avatars";
+
+const TRANSITIONS: any = {
+  [STATUS.todo]: "11",
+  [STATUS.inProgress]: "21",
+  [STATUS.done]: "31",
+  [STATUS.blocked]: "71",
+  [STATUS.closed]: "11111"
+};
 
 interface BoardState {
   stories: Story[];
@@ -87,13 +88,6 @@ class Board extends Component<BoardProps, BoardState> {
     let index = allSubtasks.findIndex(s => s.id === draggableId);
     allSubtasks[index].fields.status.id = destination.droppableId;
 
-    const TRANSITIONS: any = {
-      [STATUS.todo]: "11",
-      [STATUS.inProgress]: "21",
-      [STATUS.done]: "31",
-      [STATUS.blocked]: "71",
-      [STATUS.closed]: "11111"
-    };
     fetch(`${APIURL}/issue/${allSubtasks[index].id}/transitions`, {
       method: "post",
       headers: {
@@ -104,8 +98,26 @@ class Board extends Component<BoardProps, BoardState> {
       })
     })
       .then(res => res.json())
-      .then(status => status === 204 && this.setState({ allSubtasks }));
+      .then(status => status.result === 204 && this.setState({ allSubtasks }));
   };
+  transitionStory = (statusId: string, storyId: string) => {
+    let stories = this.state.stories;
+    let index = stories.findIndex(s => s.id === storyId);
+    stories[index].fields.status.id = statusId;
+
+    fetch(`${APIURL}/issue/${stories[index].id}/transitions`, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        transition: { id: TRANSITIONS[statusId] }
+      })
+    })
+      .then(res => res.json())
+      .then(status => status.result === 204 && this.setState({ stories }));
+  };
+
   render() {
     const storiesFilteredByAssignees = this.state.selectedAvatars.length
       ? this.state.stories.filter((story: Story) => {
@@ -170,6 +182,7 @@ class Board extends Component<BoardProps, BoardState> {
                     key={story.id}
                     story={story}
                     selectedAvatars={this.state.selectedAvatars}
+                    transitionStory={this.transitionStory}
                   />
                 ))}
               </ul>
@@ -185,6 +198,7 @@ class Board extends Component<BoardProps, BoardState> {
                     <StoryCard
                       story={story}
                       selectedAvatars={this.state.selectedAvatars}
+                      transitionStory={this.transitionStory}
                     />
                     <DragDropContext onDragEnd={this.onDragEnd}>
                       <div className="story-subtask-groups">
@@ -242,6 +256,7 @@ class Board extends Component<BoardProps, BoardState> {
                     key={story.id}
                     story={story}
                     selectedAvatars={this.state.selectedAvatars}
+                    transitionStory={this.transitionStory}
                   />
                 ))}
               </ul>
