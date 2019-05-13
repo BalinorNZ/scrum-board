@@ -1,3 +1,11 @@
+export const STATUS = {
+  todo: "10010",
+  inProgress: "3",
+  done: "10009",
+  blocked: "10909",
+  closed: "11111"
+};
+
 export interface SprintList {
   maxResults: number;
   startAt: number;
