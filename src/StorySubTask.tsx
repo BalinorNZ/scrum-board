@@ -37,6 +37,7 @@ class StorySubTask extends Component<StorySubTaskProps> {
         />
         <p>{subtask.fields.summary}</p>
         <img
+          title={subtask.fields.assignee && subtask.fields.assignee.displayName}
           alt=""
           className="avatar"
           src={

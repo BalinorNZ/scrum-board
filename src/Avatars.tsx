@@ -33,6 +33,7 @@ const Avatars = ({ subtasks, selectAvatar, selectedAvatars }: AvatarsProps) => {
               <UnassignedAvatar />
             ) : (
               <img
+                title={assignee.displayName}
                 key={index}
                 alt="assignee avatar"
                 className="avatar"
