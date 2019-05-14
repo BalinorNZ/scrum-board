@@ -24,8 +24,9 @@ class StorySubTask extends Component<StorySubTaskProps> {
         key={subtask.id}
         className={
           subtask.fields.assignee &&
-          selectedAvatars.includes(subtask.fields.assignee.displayName)
-            ? "subtask-card selected"
+          selectedAvatars.length &&
+          !selectedAvatars.includes(subtask.fields.assignee.displayName)
+            ? "subtask-card dim"
             : "subtask-card"
         }
         title={subtask.fields.summary}

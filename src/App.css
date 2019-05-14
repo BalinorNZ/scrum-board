@@ -334,11 +334,8 @@ select {
 .subtask-card-status.status-id-10909 {
   background-color: rgb(234, 67, 53);
 }
-.subtask-card.selected {
-  border-width: 2px;
-  border-style: solid;
-  border-image: initial;
-  border-color: rgba(0, 82, 204, 0.7);
+.subtask-card.dim {
+  opacity: 0.4;
 }
 
 .subtask-card p {
@@ -359,7 +356,8 @@ select {
   height: 24px;
 }
 .subtask-card:hover {
-  background-color: #eee;
+  background-color: #f0f0f0;
+  opacity: 1;
 }
 .story-subtask-groups {
   display: grid;
