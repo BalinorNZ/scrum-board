@@ -189,8 +189,17 @@ class Board extends Component<BoardProps, BoardState> {
             </li>
             <li className="inprogress-column">
               <div className="column-header">
-                In Progress ({inProgress.length} stories){" "}
-                {sumStorypoints(inProgress)}SP
+                <span className="in-progress-title">
+                  In Progress ({inProgress.length} stories){" "}
+                  {sumStorypoints(inProgress)}SP
+                </span>
+                <span className="todo">TO DO</span>
+                <span className="in-progress">
+                  <span className="blue">IN PROGRESS</span>
+                  /
+                  <span className="red">BLOCKED</span>
+                </span>
+                <span className="done">DONE</span>
               </div>
               <ul>
                 {inProgress.map((story: Story) => (

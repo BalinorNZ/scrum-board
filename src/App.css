@@ -278,6 +278,29 @@ select {
   padding: 12px;
   font-weight: bold;
 }
+.column-header .in-progress-title {
+  width: 290px;
+  display: inline-block;
+}
+.column-header .todo {
+  width: 370px;
+  display: inline-block;
+  color: #888;
+}
+.column-header .in-progress {
+  width: 370px;
+  display:  inline-block;
+}
+.column-header .in-progress .blue {
+  color: rgb(44, 99, 244);
+}
+.column-header .in-progress .red {
+  color: rgb(234, 67, 53);
+}
+.column-header .done {
+  display:  inline-block;
+  color: rgb(28, 168, 45);
+}
 .columns li ul {
   padding-left: 0;
 }
@@ -322,6 +345,9 @@ select {
   display: grid;
   grid-template-columns: 3px auto 30px;
 }
+.subtask-card-status {
+  width: 4px;
+}
 .subtask-card-status.status-id-3 {
   background-color: rgb(66, 133, 244);
 }
@@ -365,7 +391,8 @@ select {
   grid-gap: 5px;
 }
 .story-subtask-groups-separator {
-  background-color: white;
+  background-color: #999;
+  width: 1.5px
 }
 .story-subtasks {
   display: grid;
