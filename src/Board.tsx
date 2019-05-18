@@ -7,6 +7,7 @@ import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import StorySubTasks from "./StorySubTasks";
 import StoryCard from "./StoryCard";
 import Avatars from "./Avatars";
+import Ellipsis from "./Ellipsis";
 
 const TRANSITIONS: any = {
   [STATUS.todo]: "11",
@@ -21,6 +22,7 @@ interface BoardState {
   sprint: Sprint;
   allSubtasks: SubTask[];
   selectedAvatars: string[];
+  loading: boolean;
 }
 
 interface BoardRouterProps {
@@ -33,7 +35,8 @@ class Board extends Component<BoardProps, BoardState> {
     stories: [],
     sprint: {} as Sprint,
     allSubtasks: [],
-    selectedAvatars: []
+    selectedAvatars: [],
+    loading: true
   };
   timer: null | number = null;
   componentDidMount() {
@@ -43,16 +46,26 @@ class Board extends Component<BoardProps, BoardState> {
       .then(res => res.json())
       .then(({ sprint }) => this.setState({ sprint }));
 
-    this.fetchStories();
+    this.fetchStories(this.props.match.params.id);
     // TODO: disable auto-refresh during dev
     //setInterval(() => this.fetchStories(), 20000);
+  }
+  componentWillReceiveProps(newProps: BoardProps) {
+    this.setState({ loading: true });
+    fetch(`${APIURL}/board/${newProps.match.params.id}/sprint`, {
+      method: "get"
+    })
+      .then(res => res.json())
+      .then(({ sprint }) => this.setState({ sprint }));
+
+    this.fetchStories(newProps.match.params.id);
   }
   componentWillUnmount() {
     if (this.timer != null) clearInterval(this.timer);
     this.timer = null;
   }
-  fetchStories() {
-    fetch(`${APIURL}/board/${this.props.match.params.id}`, {
+  fetchStories(boardId: string) {
+    fetch(`${APIURL}/board/${boardId}`, {
       method: "get"
     })
       .then(res => res.json())
@@ -61,7 +74,7 @@ class Board extends Component<BoardProps, BoardState> {
           (acc: SubTask[], cur: Story) => acc.concat(cur.fields.subtasks),
           []
         );
-        this.setState({ stories, allSubtasks });
+        this.setState({ stories, allSubtasks, loading: false });
       });
   }
   selectAvatar = (name: string) => {
@@ -162,13 +175,17 @@ class Board extends Component<BoardProps, BoardState> {
               <span>{formatDate(this.state.sprint.endDate)}</span>
             </p>
           </div>
-          <Avatars
-            selectAvatar={this.selectAvatar}
-            selectedAvatars={this.state.selectedAvatars}
-            subtasks={this.state.allSubtasks}
-          />
+          {this.state.loading ? (
+            <Ellipsis />
+          ) : (
+            <Avatars
+              selectAvatar={this.selectAvatar}
+              selectedAvatars={this.state.selectedAvatars}
+              subtasks={this.state.allSubtasks}
+            />
+          )}
         </div>
-        {this.state.stories.length === 0 ? (
+        {this.state.loading ? (
           <Spinner />
         ) : (
           <ul className="columns">
