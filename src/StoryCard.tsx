@@ -15,8 +15,19 @@ class StoryCard extends React.Component<StoryProps> {
     activeMenu: false
   };
   onMenuToggle = () => {
+    !this.state.activeMenu
+      ? document.addEventListener("click", this.handleOutsideClick, false)
+      : document.removeEventListener("click", this.handleOutsideClick, false);
     this.setState({ activeMenu: !this.state.activeMenu });
   };
+  handleOutsideClick = (e: any) => {
+    // ignore clicks on the component itself
+    // (needs "ref={node => { this.node = node; }}" to be set on 'story' li)
+    // if (this.node.contains(e.target)) return;
+
+    this.onMenuToggle();
+  };
+
   render() {
     const { story, selectedAvatars } = this.props;
     const epicColor =
