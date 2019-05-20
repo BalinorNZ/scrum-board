@@ -77,16 +77,22 @@ class Board extends Component<BoardProps, BoardState> {
         this.setState({ stories, allSubtasks, loading: false });
       });
   }
-  selectAvatar = (name: string) => {
-    this.state.selectedAvatars.includes(name)
-      ? this.setState({
-          selectedAvatars: this.state.selectedAvatars.filter(
-            avatar => avatar !== name
-          )
-        })
-      : this.setState({
-          selectedAvatars: [...this.state.selectedAvatars, name]
-        });
+  selectAvatar = (e: React.MouseEvent<HTMLElement>, name: string) => {
+    if (e.shiftKey) {
+      this.state.selectedAvatars.includes(name)
+        ? this.setState({
+            selectedAvatars: this.state.selectedAvatars.filter(
+              avatar => avatar !== name
+            )
+          })
+        : this.setState({
+            selectedAvatars: [...this.state.selectedAvatars, name]
+          });
+    } else {
+      this.state.selectedAvatars.includes(name)
+        ? this.setState({ selectedAvatars: [] })
+        : this.setState({ selectedAvatars: [name] });
+    }
   };
   onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -212,8 +218,7 @@ class Board extends Component<BoardProps, BoardState> {
                 </span>
                 <span className="todo">TO DO</span>
                 <span className="in-progress">
-                  <span className="blue">IN PROGRESS</span>
-                  /
+                  <span className="blue">IN PROGRESS</span>/
                   <span className="red">BLOCKED</span>
                 </span>
                 <span className="done">DONE</span>

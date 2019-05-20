@@ -180,7 +180,8 @@ select {
   list-style: none;
   color: #202124;
   line-height: 20px;
-  box-shadow: 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12), 0 5px 5px -3px rgba(0, 0, 0, 0.2);
 }
 .story-menu li {
   padding-left: 20px !important;
@@ -289,7 +290,7 @@ select {
 }
 .column-header .in-progress {
   width: 370px;
-  display:  inline-block;
+  display: inline-block;
 }
 .column-header .in-progress .blue {
   color: rgb(44, 99, 244);
@@ -298,7 +299,7 @@ select {
   color: rgb(234, 67, 53);
 }
 .column-header .done {
-  display:  inline-block;
+  display: inline-block;
   color: rgb(28, 168, 45);
 }
 .columns li ul {
@@ -392,7 +393,7 @@ select {
 }
 .story-subtask-groups-separator {
   background-color: #999;
-  width: 1.5px
+  width: 1.5px;
 }
 .story-subtasks {
   display: grid;
@@ -614,7 +615,6 @@ select {
   }
 }
 
-
 /*** Ellipsis Loader ***/
 #stage {
   margin-left: 35px;
@@ -626,7 +626,8 @@ select {
 .loader div {
   position: absolute;
 }
-.loader div:before, .loader div:after {
+.loader div:before,
+.loader div:after {
   content: "";
   position: absolute;
 }
@@ -643,11 +644,11 @@ select {
   -webkit-border-radius: 5px;
   border-radius: 5px;
   background-clip: padding-box;
-  -webkit-animation: growDot 1s linear .15s infinite;
-  -moz-animation: growDot 1s linear .15s infinite;
-  -ms-animation: growDot 1s linear .15s infinite;
-  -o-animation: growDot 1s linear .15s infinite;
-  animation: growDot 1s linear .15s infinite;
+  -webkit-animation: growDot 1s linear 0.15s infinite;
+  -moz-animation: growDot 1s linear 0.15s infinite;
+  -ms-animation: growDot 1s linear 0.15s infinite;
+  -o-animation: growDot 1s linear 0.15s infinite;
+  animation: growDot 1s linear 0.15s infinite;
 }
 .loader.dots div:before {
   top: 0;
@@ -673,11 +674,11 @@ select {
   -webkit-border-radius: 5px;
   border-radius: 5px;
   background-clip: padding-box;
-  -webkit-animation: growDot 1s linear .3s infinite;
-  -moz-animation: growDot 1s linear .3s infinite;
-  -ms-animation: growDot 1s linear .3s infinite;
-  -o-animation: growDot 1s linear .3s infinite;
-  animation: growDot 1s linear .3s infinite;
+  -webkit-animation: growDot 1s linear 0.3s infinite;
+  -moz-animation: growDot 1s linear 0.3s infinite;
+  -ms-animation: growDot 1s linear 0.3s infinite;
+  -o-animation: growDot 1s linear 0.3s infinite;
+  animation: growDot 1s linear 0.3s infinite;
 }
 @-webkit-keyframes growDot {
   0% {

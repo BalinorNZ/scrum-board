@@ -4,7 +4,7 @@ import React from "react";
 
 interface AvatarsProps {
   subtasks: SubTask[];
-  selectAvatar?: (name: string) => void;
+  selectAvatar?: (e: React.MouseEvent<HTMLElement>, name: string) => void;
   selectedAvatars?: string[];
 }
 const Avatars = ({ subtasks, selectAvatar, selectedAvatars }: AvatarsProps) => {
@@ -27,7 +27,7 @@ const Avatars = ({ subtasks, selectAvatar, selectedAvatars }: AvatarsProps) => {
                 ? "avatar-with-count selected"
                 : "avatar-with-count"
             }
-            onClick={() => selectAvatar && selectAvatar(assignee.displayName)}
+            onClick={e => selectAvatar && selectAvatar(e, assignee.displayName)}
           >
             {key === "null" ? (
               <UnassignedAvatar />
