@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import {
   BrowserRouter as Router,
   Route,
-  //Link,
   withRouter,
   RouteComponentProps
 } from "react-router-dom";

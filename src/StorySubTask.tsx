@@ -5,6 +5,8 @@ import {
 } from "react-beautiful-dnd";
 import { Component } from "react";
 import React from "react";
+import Modal from "./Modal";
+import EditSubTask from "./EditSubTask";
 
 interface StorySubTaskProps {
   subtask: SubTask;
@@ -14,6 +16,9 @@ interface StorySubTaskProps {
   dragHandleProps: DraggableProvidedDragHandleProps | null;
 }
 class StorySubTask extends Component<StorySubTaskProps> {
+  state = { showModal: false };
+  handleSubTaskClick = () => this.setState({ showModal: true });
+  handleCloseModal = () => this.setState({ showModal: false });
   render() {
     const { subtask, selectedAvatars } = this.props;
     return (
@@ -36,7 +41,7 @@ class StorySubTask extends Component<StorySubTaskProps> {
             "subtask-card-status status-id-" + subtask.fields.status.id
           }
         />
-        <p>{subtask.fields.summary}</p>
+        <p onClick={this.handleSubTaskClick}>{subtask.fields.summary}</p>
         <img
           title={subtask.fields.assignee && subtask.fields.assignee.displayName}
           alt=""
@@ -46,6 +51,11 @@ class StorySubTask extends Component<StorySubTaskProps> {
             subtask.fields.assignee.avatarUrls["24x24"]
           }
         />
+        {this.state.showModal ? (
+          <Modal close={this.handleCloseModal}>
+            <EditSubTask subtask={subtask} />
+          </Modal>
+        ) : null}
       </div>
     );
   }

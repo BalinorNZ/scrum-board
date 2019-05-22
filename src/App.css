@@ -403,6 +403,62 @@ select {
   min-width: 361px;
 }
 
+.subtask-modal-issue-id {
+  color: rgb(107, 119, 140);
+}
+.subtask-modal h1 {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.modal-bg {
+  background-color: rgba(0,0,0,0.3);
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 998;
+}
+.modal {
+  background-color: white;
+  display: inline-block;
+  width: 65%;
+  height: auto;
+  z-index: 999;
+  margin: 40px;
+  padding: 30px;
+  border-radius: 3px;
+  min-width: 300px;
+  min-height: 300px;
+  box-shadow: rgba(9, 30, 66, 0.08) 0px 0px 0px 1px, rgba(9, 30, 66, 0.08) 0px 2px 1px, rgba(9, 30, 66, 0.31) 0px 0px 20px -6px;
+  justify-self: center;
+}
+.closeButton {
+  position: relative;
+  top: -10px;
+  float: right;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  color: #999;
+  text-shadow: 0 1px 0 #fff;
+  cursor: pointer;
+  z-index: 1000;
+}
+.closeButton:hover {
+  color: #555;
+}
+
+.modal-root {
+  position: relative;
+  z-index: 999;
+}
+
+
 /*.color_0 {*/
 /*border-color: #FFE380;*/
 /*background-color: #FFE380;*/
