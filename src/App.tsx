@@ -8,16 +8,27 @@ import {
 import "./App.css";
 import APIURL from "./ApiURL";
 import Board from "./Board";
+import { Authenticate } from "./Auth";
 
 class App extends Component {
   state = {
-    boards: []
+    boards: [],
+    authenticated: false
   };
   componentDidMount() {
     fetch(`${APIURL}/`, {
       method: "get"
     })
-      .then(res => res.json())
+      .then(res => {
+        if (res.status === 401) {
+          console.log("Not authenticated");
+          this.setState({ authenticated: false });
+          return;
+        }
+        console.log("Authenticated success");
+        this.setState({ authenticated: true });
+        return res.json();
+      })
       .then(boards => {
         this.setState({ boards });
       });
@@ -26,9 +37,13 @@ class App extends Component {
     return (
       <Router>
         <div className="App">
-          <BoardMenu boards={this.state.boards} />
-          <Route path="/" exact component={Welcome} />
-          <Route path="/board/:id" exact component={Board} />
+          {!this.state.authenticated ? <Authenticate/> :
+            <>
+            <BoardMenu boards={this.state.boards}/>
+            < Route path="/" exact component={Welcome} />
+            <Route path="/board/:id" exact component={Board} />
+            </>
+          }
         </div>
       </Router>
     );
