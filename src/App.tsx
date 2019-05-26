@@ -34,16 +34,14 @@ class App extends Component {
       });
   }
   render() {
-    return (
+    return !this.state.authenticated ? (
+      <Authenticate />
+    ) : (
       <Router>
         <div className="App">
-          {!this.state.authenticated ? <Authenticate/> :
-            <>
-            <BoardMenu boards={this.state.boards}/>
-            < Route path="/" exact component={Welcome} />
-            <Route path="/board/:id" exact component={Board} />
-            </>
-          }
+          <BoardMenu boards={this.state.boards} />
+          <Route path="/" exact component={Welcome} />
+          <Route path="/board/:id" exact component={Board} />
         </div>
       </Router>
     );
