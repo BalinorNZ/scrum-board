@@ -2,16 +2,30 @@
 # docker build -t scrum-board .
 # docker run -it -p 3000:80 scrum-board
 
-FROM mhart/alpine-node:11 AS builder
+# LAST WORKING CONFIG BELOW
+#FROM mhart/alpine-node:11 AS builder
+#WORKDIR /app
+#COPY . .
+#RUN yarn run build
+#
+#FROM mhart/alpine-node
+#RUN yarn global add serve
+#WORKDIR /app
+#COPY --from=builder /app/build .
+#CMD ["serve", "-p", "3000", "-s", "."]
+
+
+FROM node:8-alpine as build-deps
+
 WORKDIR /app
 COPY . .
 RUN yarn run build
+COPY --from=build-deps /app/build .
 
-FROM mhart/alpine-node
-RUN yarn global add serve
-WORKDIR /app
-COPY --from=builder /app/build .
-CMD ["serve", "-p", "3000", "-s", "."]
+FROM nginx:mainline-alpine
+
+
+
 
 
 ### LOADS OF EXPERIMENTS BELOW
