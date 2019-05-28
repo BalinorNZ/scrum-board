@@ -326,6 +326,7 @@ select {
   display: grid;
   grid-template-columns: 288px auto;
   margin: 8px;
+  margin-bottom: 35px;
 }
 .story-with-subtasks .story {
   margin: 0;
