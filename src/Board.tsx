@@ -8,6 +8,7 @@ import StorySubTasks from "./StorySubTasks";
 import StoryCard from "./StoryCard";
 import Avatars from "./Avatars";
 import Ellipsis from "./Ellipsis";
+import Separator from "./Separator";
 
 const TRANSITIONS: any = {
   [STATUS.todo]: "11",
@@ -102,7 +103,6 @@ class Board extends Component<BoardProps, BoardState> {
       destination.index === source.index
     )
       return;
-    // TODO: add a way for stories to be marked as blocked
     let allSubtasks = this.state.allSubtasks;
     let index = allSubtasks.findIndex(s => s.id === draggableId);
     allSubtasks[index].fields.status.id = destination.droppableId;
@@ -175,6 +175,7 @@ class Board extends Component<BoardProps, BoardState> {
         story.fields.status.id === STATUS.done ||
         story.fields.status.id === STATUS.closed
     );
+    // @ts-ignore
     return (
       <div className="board">
         <div className="board-header">
@@ -272,7 +273,16 @@ class Board extends Component<BoardProps, BoardState> {
                             />
                           )}
                         </Droppable>
-                        <div className="story-subtask-groups-separator" />
+                        <Droppable droppableId={STATUS.blocked}>
+                          {(provided, snapshot) => (
+                            <Separator
+                              snapshot={snapshot}
+                              innerRef={provided.innerRef}
+                              placeholder={provided.placeholder}
+                              {...provided.droppableProps}
+                            />
+                          )}
+                        </Droppable>
                         <Droppable droppableId={STATUS.done}>
                           {provided => (
                             <StorySubTasks

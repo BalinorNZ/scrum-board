@@ -275,7 +275,7 @@ select {
   color: #5e6c84;
   font-size: 13px;
   text-transform: uppercase;
-  margin: 0px;
+  margin: 0;
   padding: 12px;
   font-weight: bold;
 }
@@ -284,12 +284,12 @@ select {
   display: inline-block;
 }
 .column-header .todo {
-  width: 370px;
+  width: 385px;
   display: inline-block;
   color: #888;
 }
 .column-header .in-progress {
-  width: 370px;
+  width: 385px;
   display: inline-block;
 }
 .column-header .in-progress .blue {
@@ -326,11 +326,11 @@ select {
 .story-with-subtasks {
   display: grid;
   grid-template-columns: 288px auto;
-  margin: 8px;
-  margin-bottom: 35px;
+  padding-right: 5px;
 }
 .story-with-subtasks .story {
   margin: 0;
+  margin: 18px 8px;
 }
 .subtask-card {
   justify-self: start;
@@ -390,12 +390,15 @@ select {
 }
 .story-subtask-groups {
   display: grid;
-  grid-template-columns: 1fr 2px 1fr 2px 1fr;
-  grid-gap: 5px;
+  grid-template-columns: 1fr 25px 1fr 25px 1fr;
+  grid-gap: 3px;
 }
 .story-subtask-groups-separator {
-  background-color: #999;
-  width: 1.5px;
+  background-color: #f4f5f7;
+  width: 25px;
+}
+.blocked .story-subtask-groups-separator {
+  background-color: rgb(255, 235, 235);
 }
 .story-subtasks {
   display: grid;
@@ -403,6 +406,7 @@ select {
   grid-template-columns: 1fr 1fr;
   grid-gap: 7px;
   min-width: 361px;
+  margin: 18px 0;
 }
 
 .subtask-modal-issue-id {
