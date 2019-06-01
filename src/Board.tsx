@@ -136,6 +136,14 @@ class Board extends Component<BoardProps, BoardState> {
       .then(res => res.json())
       .then(status => status.result === 204 && this.setState({ stories }));
   };
+  isBlocked = (id: string) => {
+    const story: Story =
+      this.state.stories.find((story: Story) => story.id === id) ||
+      ({} as Story);
+    return story.fields.subtasks.filter(
+      (subtask: SubTask) => subtask.fields.status.id === STATUS.blocked
+    ).length;
+  };
 
   render() {
     const storiesFilteredByAssignees = this.state.selectedAvatars.length
@@ -225,7 +233,13 @@ class Board extends Component<BoardProps, BoardState> {
               </div>
               <ul>
                 {inProgress.map((story: Story) => (
-                  <div className="story-with-subtasks" key={story.id}>
+                  <div
+                    className={
+                      "story-with-subtasks" +
+                      (this.isBlocked(story.id) ? " blocked" : "")
+                    }
+                    key={story.id}
+                  >
                     <StoryCard
                       story={story}
                       selectedAvatars={this.state.selectedAvatars}

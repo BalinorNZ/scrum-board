@@ -1,4 +1,4 @@
-import { STATUS, Story } from "./JiraInterfaces";
+import { STATUS, Story, SubTask } from "./JiraInterfaces";
 import React from "react";
 import Avatars from "./Avatars";
 
@@ -26,6 +26,11 @@ class StoryCard extends React.Component<StoryProps> {
     // if (this.node.contains(e.target)) return;
 
     this.onMenuToggle();
+  };
+  isBlocked = () => {
+    return this.props.story.fields.subtasks.filter(
+      (subtask: SubTask) => subtask.fields.status.id === STATUS.blocked
+    ).length;
   };
 
   render() {
