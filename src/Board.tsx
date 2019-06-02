@@ -24,6 +24,7 @@ interface BoardState {
   allSubtasks: SubTask[];
   selectedAvatars: string[];
   loading: boolean;
+  hideTodo: boolean;
 }
 
 interface BoardRouterProps {
@@ -37,7 +38,8 @@ class Board extends Component<BoardProps, BoardState> {
     sprint: {} as Sprint,
     allSubtasks: [],
     selectedAvatars: [],
-    loading: true
+    loading: true,
+    hideTodo: false
   };
   timer: null | number = null;
   componentDidMount() {
@@ -144,6 +146,9 @@ class Board extends Component<BoardProps, BoardState> {
       (subtask: SubTask) => subtask.fields.status.id === STATUS.blocked
     ).length;
   };
+  handleCollapse = () => {
+    this.setState({hideTodo: !this.state.hideTodo});
+  };
 
   render() {
     const storiesFilteredByAssignees = this.state.selectedAvatars.length
@@ -203,10 +208,16 @@ class Board extends Component<BoardProps, BoardState> {
         {this.state.loading ? (
           <Spinner />
         ) : (
-          <ul className="columns">
+          <ul className={"columns" + (this.state.hideTodo ? " hide-todo" : "")}>
             <li className="todo-column">
               <div className="column-header">
-                Sprint Backlog ({toDo.length} stories) {sumStorypoints(toDo)}SP
+                {this.state.hideTodo ? `(${toDo.length})` : `Sprint Backlog(${toDo.length} stories) ${sumStorypoints(toDo)}SP`
+                }
+                <span className="collapse-button" onClick={() => this.handleCollapse()}>
+                  {this.state.hideTodo
+                    ? <>&rsaquo;</>
+                    : <>&lsaquo;</>}
+                </span>
               </div>
               <ul>
                 {toDo.map((story: Story) => (
@@ -225,12 +236,14 @@ class Board extends Component<BoardProps, BoardState> {
                   In Progress ({inProgress.length} stories){" "}
                   {sumStorypoints(inProgress)}SP
                 </span>
-                <span className="todo">TO DO</span>
-                <span className="in-progress">
-                  <span className="blue">IN PROGRESS</span>/
-                  <span className="red">BLOCKED</span>
-                </span>
-                <span className="done">DONE</span>
+                <div className="column-header-subtask-headings">
+                  <span className="todo">TO DO</span>
+                  <span className="in-progress">
+                    <span className="blue">IN PROGRESS</span>/
+                    <span className="red">BLOCKED</span>
+                  </span>
+                  <span className="done">DONE</span>
+                </div>
               </div>
               <ul>
                 {inProgress.map((story: Story) => (

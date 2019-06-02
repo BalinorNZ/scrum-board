@@ -259,7 +259,13 @@ select {
   display: grid;
   grid-template-columns: 288px auto 288px;
   grid-column-gap: 10px;
-  padding: 0 40px;
+  padding: 0 20px;
+}
+.hide-todo.columns {
+  grid-template-columns: 58px auto 288px;
+}
+.hide-todo .todo-column {
+  max-width: 58px;
 }
 .todo-column,
 .inprogress-column,
@@ -283,13 +289,19 @@ select {
   width: 290px;
   display: inline-block;
 }
+.column-header-subtask-headings {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 28px;
+  margin-right: 3px;
+}
 .column-header .todo {
-  width: 385px;
+  /*width: 385px;*/
   display: inline-block;
   color: #888;
 }
 .column-header .in-progress {
-  width: 385px;
+  /*width: 385px;*/
   display: inline-block;
 }
 .column-header .in-progress .blue {
@@ -308,6 +320,10 @@ select {
 .inprogress-column .column-header {
   background-color: rgb(222, 235, 255);
   color: rgb(7, 71, 166);
+
+  display: grid;
+  grid-template-columns: 288px auto;
+  padding-right: 5px;
 }
 .done-column .column-header {
   background-color: rgb(227, 252, 239);
@@ -322,6 +338,19 @@ select {
   background-color: rgb(255, 235, 235);
   /*color: rgb(166, 7, 7);*/
 }
+.column-header .collapse-button {
+  font-family: Proxima Nova, Helvetica Neue, Helvetica, sans-serif;
+  font-weight: 800;
+  font-size: 36px;
+  position: relative;
+  top: -21px;
+  float: right;
+  user-select: none;
+}
+.column-header .collapse-button:hover {
+  color: black;
+  cursor: pointer;
+}
 
 .story-with-subtasks {
   display: grid;
@@ -329,7 +358,6 @@ select {
   padding-right: 5px;
 }
 .story-with-subtasks .story {
-  margin: 0;
   margin: 18px 8px;
 }
 .subtask-card {
@@ -342,7 +370,7 @@ select {
   font-size: 14px;
   margin: 0;
   padding: 8px 10px 8px 5px;
-  width: 160px;
+  width: 91%;
   box-shadow: 0 1px 2px 0 rgba(9, 30, 66, 0.25);
   transition: background-color 140ms ease-in-out, border-color 75ms ease-in-out;
   display: grid;
@@ -392,6 +420,7 @@ select {
   display: grid;
   grid-template-columns: 1fr 25px 1fr 25px 1fr;
   grid-gap: 3px;
+  margin-right: 3px;
 }
 .story-subtask-groups-separator {
   background-color: #f4f5f7;
