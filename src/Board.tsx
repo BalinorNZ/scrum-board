@@ -262,8 +262,9 @@ class Board extends Component<BoardProps, BoardState> {
                     <DragDropContext onDragEnd={this.onDragEnd}>
                       <div className="story-subtask-groups">
                         <Droppable droppableId={STATUS.todo}>
-                          {provided => (
+                          {(provided, snapshot) => (
                             <StorySubTasks
+                              snapshot={snapshot}
                               innerRef={provided.innerRef}
                               placeholder={provided.placeholder}
                               {...provided.droppableProps}
@@ -275,8 +276,9 @@ class Board extends Component<BoardProps, BoardState> {
                         </Droppable>
                         <div className="story-subtask-groups-separator" />
                         <Droppable droppableId={STATUS.inProgress}>
-                          {provided => (
+                          {(provided, snapshot) => (
                             <StorySubTasks
+                              snapshot={snapshot}
                               innerRef={provided.innerRef}
                               placeholder={provided.placeholder}
                               {...provided.droppableProps}
@@ -297,8 +299,9 @@ class Board extends Component<BoardProps, BoardState> {
                           )}
                         </Droppable>
                         <Droppable droppableId={STATUS.done}>
-                          {provided => (
+                          {(provided, snapshot) => (
                             <StorySubTasks
+                              snapshot={snapshot}
                               innerRef={provided.innerRef}
                               placeholder={provided.placeholder}
                               {...provided.droppableProps}

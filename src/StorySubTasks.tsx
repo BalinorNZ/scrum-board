@@ -10,10 +10,17 @@ interface StorySubTasksProps {
   selectedAvatars: string[];
   placeholder?: React.ReactElement<HTMLElement> | null;
   innerRef: any;
+  snapshot: any;
 }
 class StorySubTasks extends Component<StorySubTasksProps> {
   render() {
-    const { story, status, selectedAvatars, placeholder } = this.props;
+    const {
+      snapshot,
+      story,
+      status,
+      selectedAvatars,
+      placeholder
+    } = this.props;
     let subtasks =
       story.fields.subtasks.length > 0
         ? story.fields.subtasks.filter((subtask: SubTask) =>
@@ -27,8 +34,22 @@ class StorySubTasks extends Component<StorySubTasksProps> {
       )
         .reverse()
         .slice(0, 4);
+    const STATUS_COLOR: any = {
+      10010: "rgb(223, 225, 230)",
+      3: "rgb(222, 235, 255)",
+      10009: "rgb(227, 252, 239)",
+      10909: "rgb(234, 67, 53)"
+    };
     return (
-      <div className="story-subtasks" ref={this.props.innerRef}>
+      <div
+        className="story-subtasks"
+        ref={this.props.innerRef}
+        style={{
+          backgroundColor: snapshot.isDraggingOver
+            ? STATUS_COLOR[status[0]]
+            : "inherit"
+        }}
+      >
         {subtasks.map((subtask: SubTask, index) => (
           <Draggable draggableId={subtask.id} index={index} key={subtask.id}>
             {provided => (
