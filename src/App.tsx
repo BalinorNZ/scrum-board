@@ -41,7 +41,13 @@ class App extends Component {
         <div className="App">
           <BoardMenu boards={this.state.boards} />
           <Route path="/" exact component={Welcome} />
-          <Route path="/board/:id" exact component={Board} />
+          <Route
+            path="/board/:id"
+            exact
+            render={routeProps => (
+              <Board {...routeProps} boards={this.state.boards} />
+            )}
+          />
         </div>
       </Router>
     );

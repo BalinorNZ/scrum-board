@@ -446,9 +446,50 @@ select {
   font-size: 24px;
   font-weight: 500;
 }
+.subtask-modal-status-title {
+  font-size: 0.85em;
+  color: rgb(94, 108, 132);
+  font-weight: 600;
+  margin: 20px 0 5px 0;
+  text-transform: uppercase;
+  line-height: 12px;
+}
+.subtask-modal-status {
+  color: rgb(255, 255, 255);
+  background: rgb(0, 82, 204);
+  height: 2.3em;
+  line-height: 2.3em;
+  border-radius: 3px;
+  padding: 0 8px;
+  width: 15%;
+  font-size: 1em;
+  vertical-align: middle;
+}
+.subtask-modal-summary {
+  height: 40px;
+  line-height: 40px;
+  width: 90%;
+  border-radius: 3px;
+  font-size: 24px;
+  border-style: none;
+  padding: 0 8px;
+  color: rgb(9, 30, 66);
+}
+.subtask-modal-save-button {
+  background-color: rgb(0, 82, 204);
+  color: white;
+  border: none;
+  height: 40px;
+  line-height: 40px;
+  min-width: 100px;
+  padding: 0 8px;
+  font-size: 20px;
+  display: block;
+  margin-top: 20px;
+}
 
 .modal-bg {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.65);
   position: fixed;
   height: 100%;
   width: 100%;

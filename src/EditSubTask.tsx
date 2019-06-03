@@ -17,11 +17,11 @@ const EditSubTask = (props: EditSubTaskProps) => {
         alt=""
         className="avatar"
         src={
-          subtask.fields.assignee && subtask.fields.assignee.avatarUrls["48x48"]
+          subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
         }
       />
-      <p>Status</p>
-      <p>{subtask.fields.status.name}</p>
+      <h2 className="subtask-modal-status-title">Status</h2>
+      <div className="subtask-modal-status">{subtask.fields.status.name}</div>
       <p>Comments</p>
     </div>
   );

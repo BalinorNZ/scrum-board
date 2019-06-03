@@ -1,9 +1,12 @@
 import { STATUS, Story, SubTask } from "./JiraInterfaces";
 import React from "react";
 import Avatars from "./Avatars";
+import Modal from "./Modal";
+import CreateSubTask from "./CreateSubTask";
 
 interface StoryCardState {
   activeMenu: boolean;
+  showCreateSubtaskModal: boolean;
 }
 interface StoryProps {
   story: Story;
@@ -12,7 +15,8 @@ interface StoryProps {
 }
 class StoryCard extends React.Component<StoryProps> {
   state: Readonly<StoryCardState> = {
-    activeMenu: false
+    activeMenu: false,
+    showCreateSubtaskModal: false
   };
   onMenuToggle = () => {
     !this.state.activeMenu
@@ -24,7 +28,6 @@ class StoryCard extends React.Component<StoryProps> {
     // ignore clicks on the component itself
     // (needs "ref={node => { this.node = node; }}" to be set on 'story' li)
     // if (this.node.contains(e.target)) return;
-
     this.onMenuToggle();
   };
   isBlocked = () => {
@@ -32,6 +35,9 @@ class StoryCard extends React.Component<StoryProps> {
       (subtask: SubTask) => subtask.fields.status.id === STATUS.blocked
     ).length;
   };
+  openCreateSubtaskModal = () =>
+    this.setState({ showCreateSubtaskModal: true });
+  handleCloseModal = () => this.setState({ showCreateSubtaskModal: false });
 
   render() {
     const { story, selectedAvatars } = this.props;
@@ -61,6 +67,7 @@ class StoryCard extends React.Component<StoryProps> {
           <li onClick={() => this.props.transitionStory(STATUS.done, story.id)}>
             Done
           </li>
+          <li onClick={() => this.openCreateSubtaskModal()}>Create Subtask</li>
         </ul>
         <section className="story-summary-section">
           <p className="summary">{story.fields.summary}</p>
@@ -98,6 +105,11 @@ class StoryCard extends React.Component<StoryProps> {
           />
           <span className="storypoints">{story.fields.customfield_10806}</span>
         </section>
+        {this.state.showCreateSubtaskModal ? (
+          <Modal close={this.handleCloseModal}>
+            <CreateSubTask story={this.props.story} />
+          </Modal>
+        ) : null}
       </li>
     );
   }

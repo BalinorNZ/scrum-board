@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import APIURL from "./ApiURL";
 import { RouteComponentProps } from "react-router";
-import { Sprint, STATUS, Story, SubTask } from "./JiraInterfaces";
+import { Board as JiraBoard, Sprint, STATUS, Story, SubTask } from "./JiraInterfaces";
 import Spinner from "./Spinner";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import StorySubTasks from "./StorySubTasks";
@@ -30,7 +30,9 @@ interface BoardState {
 interface BoardRouterProps {
   id: string;
 }
-interface BoardProps extends RouteComponentProps<BoardRouterProps> {}
+interface BoardProps extends RouteComponentProps<BoardRouterProps> {
+  boards: JiraBoard[];
+}
 
 class Board extends Component<BoardProps, BoardState> {
   state: Readonly<BoardState> = {
@@ -39,7 +41,7 @@ class Board extends Component<BoardProps, BoardState> {
     allSubtasks: [],
     selectedAvatars: [],
     loading: true,
-    hideTodo: false
+    hideTodo: false,
   };
   timer: null | number = null;
   componentDidMount() {
