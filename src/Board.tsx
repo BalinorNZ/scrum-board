@@ -1,7 +1,13 @@
 import React, { Component } from "react";
 import APIURL from "./ApiURL";
 import { RouteComponentProps } from "react-router";
-import { Board as JiraBoard, Sprint, STATUS, Story, SubTask } from "./JiraInterfaces";
+import {
+  Board as JiraBoard,
+  Sprint,
+  STATUS,
+  Story,
+  SubTask
+} from "./JiraInterfaces";
 import Spinner from "./Spinner";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import StorySubTasks from "./StorySubTasks";
@@ -41,10 +47,11 @@ class Board extends Component<BoardProps, BoardState> {
     allSubtasks: [],
     selectedAvatars: [],
     loading: true,
-    hideTodo: false,
+    hideTodo: false
   };
   timer: null | number = null;
   componentDidMount() {
+    console.log(process.env);
     fetch(`${APIURL}/board/${this.props.match.params.id}/sprint`, {
       method: "get"
     })
@@ -149,7 +156,7 @@ class Board extends Component<BoardProps, BoardState> {
     ).length;
   };
   handleCollapse = () => {
-    this.setState({hideTodo: !this.state.hideTodo});
+    this.setState({ hideTodo: !this.state.hideTodo });
   };
 
   render() {
@@ -213,12 +220,16 @@ class Board extends Component<BoardProps, BoardState> {
           <ul className={"columns" + (this.state.hideTodo ? " hide-todo" : "")}>
             <li className="todo-column">
               <div className="column-header">
-                {this.state.hideTodo ? `(${toDo.length})` : `Sprint Backlog(${toDo.length} stories) ${sumStorypoints(toDo)}SP`
-                }
-                <span className="collapse-button" onClick={() => this.handleCollapse()}>
-                  {this.state.hideTodo
-                    ? <>&rsaquo;</>
-                    : <>&lsaquo;</>}
+                {this.state.hideTodo
+                  ? `(${toDo.length})`
+                  : `Sprint Backlog(${toDo.length} stories) ${sumStorypoints(
+                      toDo
+                    )}SP`}
+                <span
+                  className="collapse-button"
+                  onClick={() => this.handleCollapse()}
+                >
+                  {this.state.hideTodo ? <>&rsaquo;</> : <>&lsaquo;</>}
                 </span>
               </div>
               <ul>
