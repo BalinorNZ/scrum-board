@@ -1,5 +1,5 @@
 const APIURL: string =
-  process.env.MOPS_ENVIRONMENT && process.env.MOPS_ENVIRONMENT !== "dev"
+  process.env.NODE_ENV && process.env.NODE_ENV === "production"
     ? "/api"
     : "http://localhost:8080/api";
 export default APIURL;
