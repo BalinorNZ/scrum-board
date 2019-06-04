@@ -16,6 +16,7 @@ class App extends Component {
     authenticated: false
   };
   componentDidMount() {
+    console.log(process.env);
     fetch(`${APIURL}/`, {
       method: "get"
     })

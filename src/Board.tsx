@@ -51,7 +51,6 @@ class Board extends Component<BoardProps, BoardState> {
   };
   timer: null | number = null;
   componentDidMount() {
-    console.log(process.env);
     fetch(`${APIURL}/board/${this.props.match.params.id}/sprint`, {
       method: "get"
     })
