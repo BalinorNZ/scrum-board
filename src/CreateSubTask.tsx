@@ -6,6 +6,7 @@ interface CreateSubTaskState {
 }
 interface CreateSubTaskProps {
   story: Story;
+  project: string;
 }
 class CreateSubTask extends React.Component<CreateSubTaskProps> {
   state: Readonly<CreateSubTaskState> = {
@@ -15,7 +16,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
     e.preventDefault();
     if (!this.state.subtaskSummary) return;
     const body = {
-      project: { key: "12016" },
+      project: { key: this.props.project },
       parent: { key: this.props.story.key },
       summary: this.state.subtaskSummary,
       description: "",

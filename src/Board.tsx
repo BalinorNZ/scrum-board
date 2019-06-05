@@ -37,7 +37,7 @@ interface BoardRouterProps {
   id: string;
 }
 interface BoardProps extends RouteComponentProps<BoardRouterProps> {
-  boards: JiraBoard[];
+  projectKey: string;
 }
 
 class Board extends Component<BoardProps, BoardState> {
@@ -47,7 +47,7 @@ class Board extends Component<BoardProps, BoardState> {
     allSubtasks: [],
     selectedAvatars: [],
     loading: true,
-    hideTodo: false
+    hideTodo: false,
   };
   timer: null | number = null;
   componentDidMount() {
@@ -235,6 +235,7 @@ class Board extends Component<BoardProps, BoardState> {
                 {toDo.map((story: Story) => (
                   <StoryCard
                     key={story.id}
+                    project={this.props.projectKey}
                     story={story}
                     selectedAvatars={this.state.selectedAvatars}
                     transitionStory={this.transitionStory}
@@ -268,6 +269,7 @@ class Board extends Component<BoardProps, BoardState> {
                   >
                     <StoryCard
                       story={story}
+                      project={this.props.projectKey}
                       selectedAvatars={this.state.selectedAvatars}
                       transitionStory={this.transitionStory}
                     />
@@ -337,6 +339,7 @@ class Board extends Component<BoardProps, BoardState> {
                 {done.map((story: Story) => (
                   <StoryCard
                     key={story.id}
+                    project={this.props.projectKey}
                     story={story}
                     selectedAvatars={this.state.selectedAvatars}
                     transitionStory={this.transitionStory}

@@ -9,6 +9,7 @@ import "./App.css";
 import APIURL from "./ApiURL";
 import Board from "./Board";
 import { Authenticate } from "./Auth";
+import { Board as JiraBoard } from "./JiraInterfaces";
 
 class App extends Component {
   state = {
@@ -44,9 +45,17 @@ class App extends Component {
           <Route
             path="/board/:id"
             exact
-            render={routeProps => (
-              <Board {...routeProps} boards={this.state.boards} />
-            )}
+            render={routeProps => {
+              console.log(routeProps.match.params.id);
+              const selectedBoard: JiraBoard =
+                this.state.boards.find(
+                  (board: JiraBoard) =>
+                    board.id === parseInt(routeProps.match.params.id)
+                ) || ({} as JiraBoard);
+              const projectKey =
+                selectedBoard && selectedBoard.location.projectKey;
+              return <Board {...routeProps} projectKey={projectKey} />;
+            }}
           />
         </div>
       </Router>

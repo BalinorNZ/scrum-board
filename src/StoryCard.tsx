@@ -12,6 +12,7 @@ interface StoryProps {
   story: Story;
   selectedAvatars: string[];
   transitionStory: (statusId: string, storyId: string) => void;
+  project: string;
 }
 class StoryCard extends React.Component<StoryProps> {
   state: Readonly<StoryCardState> = {
@@ -107,7 +108,10 @@ class StoryCard extends React.Component<StoryProps> {
         </section>
         {this.state.showCreateSubtaskModal ? (
           <Modal close={this.handleCloseModal}>
-            <CreateSubTask story={this.props.story} />
+            <CreateSubTask
+              story={this.props.story}
+              project={this.props.project}
+            />
           </Modal>
         ) : null}
       </li>
