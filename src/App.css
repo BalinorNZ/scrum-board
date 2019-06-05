@@ -262,10 +262,11 @@ select {
   padding: 0 20px;
 }
 .hide-todo.columns {
-  grid-template-columns: 58px auto 288px;
+  grid-template-columns: 64px auto 288px;
 }
 .hide-todo .todo-column {
-  max-width: 58px;
+  max-width: 64px;
+  overflow: hidden;
 }
 .todo-column,
 .inprogress-column,
