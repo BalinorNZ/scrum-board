@@ -53,7 +53,9 @@ class App extends Component {
                     board.id === parseInt(routeProps.match.params.id)
                 ) || ({} as JiraBoard);
               const projectKey =
-                selectedBoard && selectedBoard.location.projectKey;
+                selectedBoard &&
+                selectedBoard.location &&
+                selectedBoard.location.projectKey;
               return <Board {...routeProps} projectKey={projectKey} />;
             }}
           />

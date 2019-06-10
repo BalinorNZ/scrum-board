@@ -7,4 +7,5 @@ RUN yarn run build
 #COPY --from=build-deps /app/build .
 
 FROM nginx:mainline-alpine
+COPY client.nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build-deps /app/build /usr/share/nginx/html

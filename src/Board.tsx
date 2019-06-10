@@ -47,7 +47,7 @@ class Board extends Component<BoardProps, BoardState> {
     allSubtasks: [],
     selectedAvatars: [],
     loading: true,
-    hideTodo: false,
+    hideTodo: false
   };
   timer: null | number = null;
   componentDidMount() {
@@ -81,10 +81,12 @@ class Board extends Component<BoardProps, BoardState> {
     })
       .then(res => res.json())
       .then(({ stories }) => {
-        const allSubtasks = stories.reduce(
-          (acc: SubTask[], cur: Story) => acc.concat(cur.fields.subtasks),
-          []
-        );
+        const allSubtasks =
+          stories &&
+          stories.reduce(
+            (acc: SubTask[], cur: Story) => acc.concat(cur.fields.subtasks),
+            []
+          );
         this.setState({ stories, allSubtasks, loading: false });
       });
   }
