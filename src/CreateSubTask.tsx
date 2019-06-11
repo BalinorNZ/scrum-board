@@ -1,5 +1,6 @@
 import React from "react";
 import { Story } from "./JiraInterfaces";
+import APIURL from "./ApiURL";
 
 interface CreateSubTaskState {
   subtaskSummary: string;
@@ -19,13 +20,31 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
       project: { key: this.props.project },
       parent: { key: this.props.story.key },
       summary: this.state.subtaskSummary,
-      description: "",
+      description: {
+        type: "doc",
+        version: 1,
+        content: [
+          {
+            type: "paragraph",
+            content: [{ text: "", type: "text" }]
+          }
+        ]
+      },
       issuetype: { id: "5" }
     };
     console.log(body);
+    fetch(`${APIURL}/issue`, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    })
+      .then(res => res.json())
+      // TODO: push newly created subtask onto the board
+      .then(status => status.result === 204 && console.log(status));
   };
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
     this.setState({ subtaskSummary: e.target.value });
   };
   render() {
