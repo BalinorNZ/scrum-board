@@ -13,6 +13,7 @@ interface StoryProps {
   selectedAvatars: string[];
   transitionStory: (statusId: string, storyId: string) => void;
   project: string;
+  assignees: any;
 }
 class StoryCard extends React.Component<StoryProps> {
   state: Readonly<StoryCardState> = {
@@ -111,6 +112,8 @@ class StoryCard extends React.Component<StoryProps> {
             <CreateSubTask
               story={this.props.story}
               project={this.props.project}
+              assignees={this.props.assignees}
+              close={this.handleCloseModal}
             />
           </Modal>
         ) : null}

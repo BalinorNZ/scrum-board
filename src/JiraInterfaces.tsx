@@ -110,7 +110,7 @@ export interface Sprint {
   state: string;
 }
 
-interface Actor {
+export interface Actor {
   accountId: string;
   active: boolean;
   avatarUrls: {

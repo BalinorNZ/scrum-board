@@ -15,6 +15,7 @@ import StoryCard from "./StoryCard";
 import Avatars from "./Avatars";
 import Ellipsis from "./Ellipsis";
 import Separator from "./Separator";
+import groupBy from "lodash.groupby";
 
 const TRANSITIONS: any = {
   [STATUS.todo]: "11",
@@ -241,6 +242,7 @@ class Board extends Component<BoardProps, BoardState> {
                     story={story}
                     selectedAvatars={this.state.selectedAvatars}
                     transitionStory={this.transitionStory}
+                    assignees={getAssigneeListFromSubtasks(this.state.allSubtasks)}
                   />
                 ))}
               </ul>
@@ -274,6 +276,7 @@ class Board extends Component<BoardProps, BoardState> {
                       project={this.props.projectKey}
                       selectedAvatars={this.state.selectedAvatars}
                       transitionStory={this.transitionStory}
+                      assignees={getAssigneeListFromSubtasks(this.state.allSubtasks)}
                     />
                     <DragDropContext onDragEnd={this.onDragEnd}>
                       <div className="story-subtask-groups">
@@ -345,6 +348,7 @@ class Board extends Component<BoardProps, BoardState> {
                     story={story}
                     selectedAvatars={this.state.selectedAvatars}
                     transitionStory={this.transitionStory}
+                    assignees={getAssigneeListFromSubtasks(this.state.allSubtasks)}
                   />
                 ))}
               </ul>
@@ -357,6 +361,17 @@ class Board extends Component<BoardProps, BoardState> {
 }
 
 export default Board;
+
+function getAssigneeListFromSubtasks(subtasks: SubTask[]) {
+  const groupedSubtasks = groupBy(
+    subtasks,
+    (subtask: SubTask) =>
+      subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
+  );
+  return Object.keys(groupedSubtasks).map((key: any) => (
+    groupedSubtasks[key][0].fields.assignee || { displayName: "" }
+  ));
+}
 
 function sumStorypoints(stories: Story[]) {
   return stories.reduce(
