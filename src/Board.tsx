@@ -47,7 +47,7 @@ class Board extends Component<BoardProps, BoardState> {
     allSubtasks: [],
     selectedAvatars: [],
     loading: true,
-    hideTodo: false
+    hideTodo: true
   };
   timer: null | number = null;
   componentDidMount() {
