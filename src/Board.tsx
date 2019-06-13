@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import APIURL from "./ApiURL";
 import { RouteComponentProps } from "react-router";
 import {
-  Board as JiraBoard,
   Sprint,
   STATUS,
   Story,
@@ -38,7 +37,6 @@ interface BoardRouterProps {
   id: string;
 }
 interface BoardProps extends RouteComponentProps<BoardRouterProps> {
-  projectKey: string;
 }
 
 class Board extends Component<BoardProps, BoardState> {
@@ -238,7 +236,6 @@ class Board extends Component<BoardProps, BoardState> {
                 {toDo.map((story: Story) => (
                   <StoryCard
                     key={story.id}
-                    project={this.props.projectKey}
                     story={story}
                     selectedAvatars={this.state.selectedAvatars}
                     transitionStory={this.transitionStory}
@@ -273,7 +270,6 @@ class Board extends Component<BoardProps, BoardState> {
                   >
                     <StoryCard
                       story={story}
-                      project={this.props.projectKey}
                       selectedAvatars={this.state.selectedAvatars}
                       transitionStory={this.transitionStory}
                       assignees={getAssigneeListFromSubtasks(this.state.allSubtasks)}
@@ -344,7 +340,6 @@ class Board extends Component<BoardProps, BoardState> {
                 {done.map((story: Story) => (
                   <StoryCard
                     key={story.id}
-                    project={this.props.projectKey}
                     story={story}
                     selectedAvatars={this.state.selectedAvatars}
                     transitionStory={this.transitionStory}

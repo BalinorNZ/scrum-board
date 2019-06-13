@@ -1,6 +1,7 @@
 import React from "react";
-import { Actor, Story, SubTask } from "./JiraInterfaces";
+import { Actor, Story } from "./JiraInterfaces";
 import APIURL from "./ApiURL";
+import { BoardContext } from "./BoardContext";
 
 interface CreateSubTaskState {
   subtaskSummary: string;
@@ -8,11 +9,12 @@ interface CreateSubTaskState {
 }
 interface CreateSubTaskProps {
   story: Story;
-  project: string;
   assignees: Actor[];
   close: () => void;
 }
 class CreateSubTask extends React.Component<CreateSubTaskProps> {
+  static contextType = BoardContext;
+
   state: Readonly<CreateSubTaskState> = {
     subtaskSummary: "",
     selectedAvatar:
@@ -28,7 +30,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
     this.props.close();
     if (!this.state.subtaskSummary) return;
     const body = {
-      project: { key: this.props.project },
+      project: { key: this.context.projectKey },
       parent: { key: this.props.story.key },
       summary: this.state.subtaskSummary,
       description: {
@@ -44,7 +46,6 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
       issuetype: { id: "5" },
       assignee: { id: this.state.selectedAvatar }
     };
-    console.log(body);
     fetch(`${APIURL}/issue`, {
       method: "post",
       headers: {
@@ -57,7 +58,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
       // fetch subtask issue and push into subtasks array in global stories/allSubtasks arrays
       // res.result.id/key/self
       .then(status => {
-        status.result === 204 && console.log(status);
+        console.log(status);
       });
   };
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

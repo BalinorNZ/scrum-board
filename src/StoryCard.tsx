@@ -12,7 +12,6 @@ interface StoryProps {
   story: Story;
   selectedAvatars: string[];
   transitionStory: (statusId: string, storyId: string) => void;
-  project: string;
   assignees: any;
 }
 class StoryCard extends React.Component<StoryProps> {
@@ -111,7 +110,6 @@ class StoryCard extends React.Component<StoryProps> {
           <Modal close={this.handleCloseModal}>
             <CreateSubTask
               story={this.props.story}
-              project={this.props.project}
               assignees={this.props.assignees}
               close={this.handleCloseModal}
             />

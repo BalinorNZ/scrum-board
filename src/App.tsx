@@ -10,6 +10,7 @@ import APIURL from "./ApiURL";
 import Board from "./Board";
 import { Authenticate } from "./Auth";
 import { Board as JiraBoard } from "./JiraInterfaces";
+import { BoardContext } from "./BoardContext";
 
 class App extends Component {
   state = {
@@ -46,7 +47,6 @@ class App extends Component {
             path="/board/:id"
             exact
             render={routeProps => {
-              console.log(routeProps.match.params.id);
               const selectedBoard: JiraBoard =
                 this.state.boards.find(
                   (board: JiraBoard) =>
@@ -56,7 +56,11 @@ class App extends Component {
                 selectedBoard &&
                 selectedBoard.location &&
                 selectedBoard.location.projectKey;
-              return <Board {...routeProps} projectKey={projectKey} />;
+              return (
+                <BoardContext.Provider value={{ projectKey }}>
+                  <Board {...routeProps} />
+                </BoardContext.Provider>
+              );
             }}
           />
         </div>
