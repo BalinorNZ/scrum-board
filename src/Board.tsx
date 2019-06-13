@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import APIURL from "./ApiURL";
 import { RouteComponentProps } from "react-router";
 import {
-  Sprint,
   STATUS,
   Story,
   SubTask
@@ -15,6 +14,7 @@ import Avatars from "./Avatars";
 import Ellipsis from "./Ellipsis";
 import Separator from "./Separator";
 import groupBy from "lodash.groupby";
+import {BoardContext} from "./BoardContext";
 
 const TRANSITIONS: any = {
   [STATUS.todo]: "11",
@@ -25,11 +25,7 @@ const TRANSITIONS: any = {
 };
 
 interface BoardState {
-  stories: Story[];
-  sprint: Sprint;
-  allSubtasks: SubTask[];
   selectedAvatars: string[];
-  loading: boolean;
   hideTodo: boolean;
 }
 
@@ -40,54 +36,16 @@ interface BoardProps extends RouteComponentProps<BoardRouterProps> {
 }
 
 class Board extends Component<BoardProps, BoardState> {
+  static contextType = BoardContext;
+
   state: Readonly<BoardState> = {
-    stories: [],
-    sprint: {} as Sprint,
-    allSubtasks: [],
     selectedAvatars: [],
-    loading: true,
     hideTodo: true
   };
   timer: null | number = null;
-  componentDidMount() {
-    fetch(`${APIURL}/board/${this.props.match.params.id}/sprint`, {
-      method: "get"
-    })
-      .then(res => res.json())
-      .then(({ sprint }) => this.setState({ sprint }));
-
-    this.fetchStories(this.props.match.params.id);
-    // TODO: disable auto-refresh during dev
-    //setInterval(() => this.fetchStories(), 20000);
-  }
-  componentWillReceiveProps(newProps: BoardProps) {
-    this.setState({ loading: true });
-    fetch(`${APIURL}/board/${newProps.match.params.id}/sprint`, {
-      method: "get"
-    })
-      .then(res => res.json())
-      .then(({ sprint }) => this.setState({ sprint }));
-
-    this.fetchStories(newProps.match.params.id);
-  }
   componentWillUnmount() {
     if (this.timer != null) clearInterval(this.timer);
     this.timer = null;
-  }
-  fetchStories(boardId: string) {
-    fetch(`${APIURL}/board/${boardId}`, {
-      method: "get"
-    })
-      .then(res => res.json())
-      .then(({ stories }) => {
-        const allSubtasks =
-          stories &&
-          stories.reduce(
-            (acc: SubTask[], cur: Story) => acc.concat(cur.fields.subtasks),
-            []
-          );
-        this.setState({ stories, allSubtasks, loading: false });
-      });
   }
   selectAvatar = (e: React.MouseEvent<HTMLElement>, name: string) => {
     if (e.shiftKey) {
@@ -114,8 +72,8 @@ class Board extends Component<BoardProps, BoardState> {
       destination.index === source.index
     )
       return;
-    let allSubtasks = this.state.allSubtasks;
-    let index = allSubtasks.findIndex(s => s.id === draggableId);
+    let allSubtasks = this.context.allSubtasks;
+    let index = allSubtasks.findIndex((s: SubTask) => s.id === draggableId);
     allSubtasks[index].fields.status.id = destination.droppableId;
 
     fetch(`${APIURL}/issue/${allSubtasks[index].id}/transitions`, {
@@ -128,11 +86,11 @@ class Board extends Component<BoardProps, BoardState> {
       })
     })
       .then(res => res.json())
-      .then(status => status.result === 204 && this.setState({ allSubtasks }));
+      .then(status => status.result === 204 && this.context.updateSubtasks(allSubtasks));
   };
   transitionStory = (statusId: string, storyId: string) => {
-    let stories = this.state.stories;
-    let index = stories.findIndex(s => s.id === storyId);
+    let stories = this.context.stories;
+    let index = stories.findIndex((s: Story) => s.id === storyId);
     stories[index].fields.status.id = statusId;
 
     fetch(`${APIURL}/issue/${stories[index].id}/transitions`, {
@@ -145,11 +103,11 @@ class Board extends Component<BoardProps, BoardState> {
       })
     })
       .then(res => res.json())
-      .then(status => status.result === 204 && this.setState({ stories }));
+      .then(status => status.result === 204 && this.context.updateStories(stories));
   };
   isBlocked = (id: string) => {
     const story: Story =
-      this.state.stories.find((story: Story) => story.id === id) ||
+      this.context.stories.find((story: Story) => story.id === id) ||
       ({} as Story);
     return story.fields.subtasks.filter(
       (subtask: SubTask) => subtask.fields.status.id === STATUS.blocked
@@ -161,7 +119,7 @@ class Board extends Component<BoardProps, BoardState> {
 
   render() {
     const storiesFilteredByAssignees = this.state.selectedAvatars.length
-      ? this.state.stories.filter((story: Story) => {
+      ? this.context.stories.filter((story: Story) => {
           const storyAssignees = [
             ...story.fields.subtasks.map(
               subtask =>
@@ -175,7 +133,7 @@ class Board extends Component<BoardProps, BoardState> {
               this.state.selectedAvatars.includes(assignee)
           );
         })
-      : this.state.stories;
+      : this.context.stories;
     const inProgress = storiesFilteredByAssignees.filter(
       (story: Story) =>
         story.fields.status.id === STATUS.inProgress ||
@@ -194,27 +152,27 @@ class Board extends Component<BoardProps, BoardState> {
       <div className="board">
         <div className="board-header">
           <div>
-            <span className="sprint-title">{this.state.sprint.name}</span>
+            <span className="sprint-title">{this.context.sprint.name}</span>
             <span className="story-count">
-              {this.state.stories.length} stories
+              {this.context.stories.length} stories
             </span>
             <p className="sprint-dates">
-              <span>{formatDate(this.state.sprint.startDate)}</span>
+              <span>{formatDate(this.context.sprint.startDate)}</span>
               <span className="divider">•</span>
-              <span>{formatDate(this.state.sprint.endDate)}</span>
+              <span>{formatDate(this.context.sprint.endDate)}</span>
             </p>
           </div>
-          {this.state.loading ? (
+          {this.context.stories.length === 0 ? (
             <Ellipsis />
           ) : (
             <Avatars
               selectAvatar={this.selectAvatar}
               selectedAvatars={this.state.selectedAvatars}
-              subtasks={this.state.allSubtasks}
+              subtasks={this.context.allSubtasks}
             />
           )}
         </div>
-        {this.state.loading ? (
+        {this.context.stories.length === 0 ? (
           <Spinner />
         ) : (
           <ul className={"columns" + (this.state.hideTodo ? " hide-todo" : "")}>
@@ -239,7 +197,7 @@ class Board extends Component<BoardProps, BoardState> {
                     story={story}
                     selectedAvatars={this.state.selectedAvatars}
                     transitionStory={this.transitionStory}
-                    assignees={getAssigneeListFromSubtasks(this.state.allSubtasks)}
+                    assignees={getAssigneeListFromSubtasks(this.context.allSubtasks)}
                   />
                 ))}
               </ul>
@@ -272,7 +230,7 @@ class Board extends Component<BoardProps, BoardState> {
                       story={story}
                       selectedAvatars={this.state.selectedAvatars}
                       transitionStory={this.transitionStory}
-                      assignees={getAssigneeListFromSubtasks(this.state.allSubtasks)}
+                      assignees={getAssigneeListFromSubtasks(this.context.allSubtasks)}
                     />
                     <DragDropContext onDragEnd={this.onDragEnd}>
                       <div className="story-subtask-groups">
@@ -343,7 +301,7 @@ class Board extends Component<BoardProps, BoardState> {
                     story={story}
                     selectedAvatars={this.state.selectedAvatars}
                     transitionStory={this.transitionStory}
-                    assignees={getAssigneeListFromSubtasks(this.state.allSubtasks)}
+                    assignees={getAssigneeListFromSubtasks(this.context.allSubtasks)}
                   />
                 ))}
               </ul>

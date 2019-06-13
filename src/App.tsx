@@ -10,7 +10,7 @@ import APIURL from "./ApiURL";
 import Board from "./Board";
 import { Authenticate } from "./Auth";
 import { Board as JiraBoard } from "./JiraInterfaces";
-import { BoardContext } from "./BoardContext";
+import BoardContextProvider from "./BoardContext";
 
 class App extends Component {
   state = {
@@ -57,9 +57,12 @@ class App extends Component {
                 selectedBoard.location &&
                 selectedBoard.location.projectKey;
               return (
-                <BoardContext.Provider value={{ projectKey }}>
+                <BoardContextProvider
+                  projectKey={projectKey}
+                  boardId={parseInt(routeProps.match.params.id)}
+                >
                   <Board {...routeProps} />
-                </BoardContext.Provider>
+                </BoardContextProvider>
               );
             }}
           />
