@@ -6,8 +6,8 @@ const defaultBoardContext = {
   projectKey: "",
   boardId: 0,
   sprint: {} as Sprint,
-  stories: [],
-  allSubtasks: []
+  stories: [] as Story[],
+  allSubtasks: [] as SubTask[]
   // selectedAvatars: []
 };
 
@@ -63,13 +63,13 @@ class BoardContextProvider extends React.Component<
   };
 
   public updateSubtasks = (subTasks: SubTask[]) => {
-    console.log(subTasks);
-    // this.setState({allSubtasks: subTasks});
+    this.setState({ allSubtasks: subTasks });
   };
 
   public updateStories = (stories: Story[]) => {
     console.log(stories);
-    // this.setState({stories});
+    //const stories = [...this.state.stories, story];
+    this.setState({ stories });
   };
 
   render() {

@@ -147,7 +147,7 @@ class Board extends Component<BoardProps, BoardState> {
         story.fields.status.id === STATUS.done ||
         story.fields.status.id === STATUS.closed
     );
-    // @ts-ignore
+
     return (
       <div className="board">
         <div className="board-header">
