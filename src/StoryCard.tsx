@@ -3,10 +3,12 @@ import React from "react";
 import Avatars from "./Avatars";
 import Modal from "./Modal";
 import CreateSubTask from "./CreateSubTask";
+import EditStory from "./EditStory";
 
 interface StoryCardState {
   activeMenu: boolean;
   showCreateSubtaskModal: boolean;
+  showStoryModal: boolean;
 }
 interface StoryProps {
   story: Story;
@@ -17,8 +19,11 @@ interface StoryProps {
 class StoryCard extends React.Component<StoryProps> {
   state: Readonly<StoryCardState> = {
     activeMenu: false,
-    showCreateSubtaskModal: false
+    showCreateSubtaskModal: false,
+    showStoryModal: false
   };
+  handleStoryClick = () => this.setState({ showStoryModal: true });
+  handleCloseStoryModal = () => this.setState({ showStoryModal: false });
   onMenuToggle = () => {
     !this.state.activeMenu
       ? document.addEventListener("click", this.handleOutsideClick, false)
@@ -71,7 +76,9 @@ class StoryCard extends React.Component<StoryProps> {
           <li onClick={() => this.openCreateSubtaskModal()}>Create Subtask</li>
         </ul>
         <section className="story-summary-section">
-          <p className="summary">{story.fields.summary}</p>
+          <p onClick={this.handleStoryClick} className="summary">
+            {story.fields.summary}
+          </p>
           {story.fields.epic && (
             <p className="epic">
               <span className={epicColor + " epic-label"}>
@@ -113,6 +120,11 @@ class StoryCard extends React.Component<StoryProps> {
               assignees={this.props.assignees}
               close={this.handleCloseModal}
             />
+          </Modal>
+        ) : null}
+        {this.state.showStoryModal ? (
+          <Modal close={this.handleCloseStoryModal}>
+            <EditStory story={story} />
           </Modal>
         ) : null}
       </li>
