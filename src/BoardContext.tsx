@@ -42,7 +42,6 @@ class BoardContextProvider extends React.Component<
       stories,
       allSubtasks
     });
-
     // TODO: disable auto-refresh during dev
     //setInterval(() => this.fetchStories(), 20000);
   }
@@ -62,14 +61,18 @@ class BoardContextProvider extends React.Component<
       .then(({ stories }) => stories);
   };
 
-  public updateSubtasks = (subTasks: SubTask[]) => {
-    this.setState({ allSubtasks: subTasks });
+  public updateSubtasks = (subtasks: SubTask[]) => {
+    this.setState({ allSubtasks: subtasks });
   };
-
   public updateStories = (stories: Story[]) => {
-    console.log(stories);
-    //const stories = [...this.state.stories, story];
     this.setState({ stories });
+  };
+  public saveSubtask = (subtask: SubTask, storyId: number) => {
+    const allSubtasks = [...this.state.allSubtasks, subtask];
+    let stories = this.state.stories;
+    const index = stories.findIndex((s: Story) => s.id === String(storyId));
+    stories[index].fields.subtasks.push(subtask);
+    this.setState({ stories, allSubtasks });
   };
 
   render() {
@@ -78,7 +81,8 @@ class BoardContextProvider extends React.Component<
         value={{
           ...this.state,
           updateSubtasks: this.updateSubtasks,
-          updateStories: this.updateStories
+          updateStories: this.updateStories,
+          saveSubtask: this.saveSubtask
         }}
       >
         {this.props.children}

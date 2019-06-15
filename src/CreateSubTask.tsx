@@ -54,11 +54,12 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
       body: JSON.stringify(body)
     })
       .then(res => res.json())
-      // TODO: push newly created subtask onto the board
-      // fetch subtask issue and push into subtasks array in global stories/allSubtasks arrays
-      // res.result.id/key/self
-      .then(status => {
-        console.log(status);
+      .then(result => {
+        fetch(`${APIURL}/issue/${result.id}`, {
+          method: "get"
+        })
+          .then(res => res.json())
+          .then(issue => this.context.saveSubtask(issue, this.props.story.id));
       });
   };
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
