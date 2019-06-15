@@ -13,43 +13,57 @@ const Avatars = ({ subtasks, selectAvatar, selectedAvatars }: AvatarsProps) => {
     (subtask: SubTask) =>
       subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
   );
+  const teamMembers = Object.keys(groupedSubtasks).map((key: string) => ({
+    assignee: groupedSubtasks[key][0].fields.assignee || null,
+    subtasks: groupedSubtasks[key]
+  }));
   return (
     <div>
-      {Object.keys(groupedSubtasks).map((key: any, index) => {
-        const assignee = groupedSubtasks[key][0].fields.assignee || {
-          displayName: ""
-        };
-        return (
-          <div
-            key={index}
-            className={
-              selectedAvatars && selectedAvatars.includes(assignee.displayName)
-                ? "avatar-with-count selected"
-                : "avatar-with-count"
-            }
-            onClick={e => selectAvatar && selectAvatar(e, assignee.displayName)}
-          >
-            {key === "null" ? (
-              <UnassignedAvatar />
-            ) : (
-              <img
-                title={assignee.displayName}
-                key={index}
-                alt="assignee avatar"
-                className="avatar"
-                src={key}
-              />
-            )}
-            <span>
-              {
-                groupedSubtasks[key].filter((subtask: SubTask) =>
-                  notDone(subtask)
-                ).length
+      {teamMembers
+        .sort((a, b) => {
+          if (!a.assignee || !b.assignee) return -1;
+          if (a.assignee.displayName < b.assignee.displayName) return -1;
+          if (a.assignee.displayName > b.assignee.displayName) return 1;
+          return 0;
+        })
+        .map((teamMember, index) => {
+          return (
+            <div
+              key={index}
+              className={
+                selectedAvatars &&
+                teamMember.assignee &&
+                selectedAvatars.includes(teamMember.assignee.displayName)
+                  ? "avatar-with-count selected"
+                  : "avatar-with-count"
               }
-            </span>
-          </div>
-        );
-      })}
+              onClick={e =>
+                selectAvatar &&
+                teamMember.assignee &&
+                selectAvatar(e, teamMember.assignee.displayName)
+              }
+            >
+              {teamMember.assignee === null ? (
+                <UnassignedAvatar />
+              ) : (
+                <img
+                  title={teamMember.assignee.displayName}
+                  key={index}
+                  alt="assignee avatar"
+                  className="avatar"
+                  src={teamMember.assignee.avatarUrls["48x48"]}
+                />
+              )}
+              <span>
+                {
+                  teamMember.subtasks.filter((subtask: SubTask) =>
+                    notDone(subtask)
+                  ).length
+                }
+              </span>
+            </div>
+          );
+        })}
     </div>
   );
 };

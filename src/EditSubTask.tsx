@@ -11,7 +11,7 @@ const EditSubTask = (props: EditSubTaskProps) => {
       <span className="subtask-modal-issue-id">{subtask.key}</span>
       <h1>{subtask.fields.summary}</h1>
       <p>{subtask.fields.description}</p>
-      <p>Assignee</p>
+      <h2 className="subtask-modal-status-title">Assignee</h2>
       <img
         title={subtask.fields.assignee && subtask.fields.assignee.displayName}
         alt=""
@@ -22,7 +22,6 @@ const EditSubTask = (props: EditSubTaskProps) => {
       />
       <h2 className="subtask-modal-status-title">Status</h2>
       <div className="subtask-modal-status">{subtask.fields.status.name}</div>
-      <p>Comments</p>
     </div>
   );
 };
