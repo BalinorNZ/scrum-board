@@ -147,6 +147,13 @@ interface IssueType {
   subtask: boolean;
 }
 
+export interface Epic {
+  key: string;
+  color: string;
+  name: string;
+  stories: Story[];
+}
+
 export interface EpicList {
   [epic: string]: Issue[];
 }

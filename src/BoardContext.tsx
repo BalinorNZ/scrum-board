@@ -1,17 +1,25 @@
 import * as React from "react";
-import { Sprint, Story, SubTask } from "./JiraInterfaces";
+import { Epic, Sprint, Story, SubTask } from "./JiraInterfaces";
 import APIURL from "./ApiURL";
 
-const defaultBoardContext = {
+type BoardContextState = {
+  projectKey: string;
+  boardId: number;
+  sprint: Sprint;
+  stories: Story[];
+  allSubtasks: SubTask[];
+  selectedEpic: Epic | undefined;
+};
+const defaultBoardContext: BoardContextState = {
   projectKey: "",
   boardId: 0,
   sprint: {} as Sprint,
   stories: [] as Story[],
-  allSubtasks: [] as SubTask[]
+  allSubtasks: [] as SubTask[],
+  selectedEpic: undefined
   // selectedAvatars: []
 };
 
-type BoardContextState = typeof defaultBoardContext;
 type BoardContextProps = {
   projectKey: string;
   boardId: number;
@@ -74,6 +82,9 @@ class BoardContextProvider extends React.Component<
     stories[index].fields.subtasks.push(subtask);
     this.setState({ stories, allSubtasks });
   };
+  public selectEpic = (epic: Epic | undefined) => {
+    this.setState({ selectedEpic: epic });
+  };
 
   render() {
     return (
@@ -82,7 +93,8 @@ class BoardContextProvider extends React.Component<
           ...this.state,
           updateSubtasks: this.updateSubtasks,
           updateStories: this.updateStories,
-          saveSubtask: this.saveSubtask
+          saveSubtask: this.saveSubtask,
+          selectEpic: this.selectEpic
         }}
       >
         {this.props.children}

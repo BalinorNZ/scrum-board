@@ -119,8 +119,12 @@ class Board extends Component<BoardProps, BoardState> {
   };
 
   render() {
+    const storiesFilteredByEpic = this.context.selectedEpic ? this.context.stories.filter((story: Story) => {
+      if(this.context.selectedEpic.key === null && !story.fields.epic) return true;
+      return story.fields.epic && story.fields.epic.key === this.context.selectedEpic.key;
+    }) : this.context.stories;
     const storiesFilteredByAssignees = this.state.selectedAvatars.length
-      ? this.context.stories.filter((story: Story) => {
+      ? storiesFilteredByEpic.filter((story: Story) => {
           const storyAssignees = [
             ...story.fields.subtasks.map(
               subtask =>
@@ -134,7 +138,7 @@ class Board extends Component<BoardProps, BoardState> {
               this.state.selectedAvatars.includes(assignee)
           );
         })
-      : this.context.stories;
+      : storiesFilteredByEpic;
     const inProgress = storiesFilteredByAssignees.filter(
       (story: Story) =>
         story.fields.status.id === STATUS.inProgress ||

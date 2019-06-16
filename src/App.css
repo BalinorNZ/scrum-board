@@ -11,8 +11,9 @@ select {
 }
 .board-menu {
   position: absolute;
-  right: 40px;
-  top: 0;
+  right: 20px;
+  top: 5px;
+  height: 36px;
 }
 
 .board-header {
@@ -23,7 +24,7 @@ select {
   margin-right: 20px;
 }
 .sprint-title {
-  margin-left: 40px;
+  margin-left: 20px;
   color: #333;
   font-size: 14px;
   font-weight: bold;
@@ -35,7 +36,7 @@ select {
 .sprint-dates {
   color: #7a869a;
   font-size: 12px;
-  margin: 5px 0 5px 40px;
+  margin: 5px 0 5px 20px;
 }
 .divider {
   margin: 0 5px;

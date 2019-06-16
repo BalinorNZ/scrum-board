@@ -3,21 +3,14 @@ import { BoardContext } from "./BoardContext";
 import groupBy from "lodash.groupby";
 import { Story } from "./JiraInterfaces";
 
-interface Epic {
-  color: string;
-  name: string;
-  stories: Story[];
-}
 interface EpicFilterState {
   open: boolean;
-  selectedEpic: Epic | undefined;
 }
 class EpicFilter extends React.Component<{}, EpicFilterState> {
   static contextType = BoardContext;
 
   state: EpicFilterState = {
-    open: false,
-    selectedEpic: undefined
+    open: false
   };
   buttonRef = React.createRef() as any;
 
@@ -34,9 +27,6 @@ class EpicFilter extends React.Component<{}, EpicFilterState> {
     }
     this.setState({ open: !this.state.open });
   };
-  selectEpic = (epic: Epic) => {
-    this.setState({ selectedEpic: epic });
-  };
 
   render() {
     const groupedStories = groupBy(
@@ -45,13 +35,14 @@ class EpicFilter extends React.Component<{}, EpicFilterState> {
     );
     const epicList = Object.keys(groupedStories).map((key: string) => ({
       name: key === "null" ? "No Epic Set" : key,
+      key: key === "null" ? null : groupedStories[key][0].fields.epic.key,
       stories: groupedStories[key],
       color: groupedStories[key][0].fields.epic
         ? groupedStories[key][0].fields.epic.color.key
         : "#ccc"
     }));
-    const buttonBg = this.state.selectedEpic
-      ? this.state.selectedEpic.color
+    const buttonBg = this.context.selectedEpic
+      ? this.context.selectedEpic.color
       : "auto";
     console.log(epicList);
     return (
@@ -67,8 +58,8 @@ class EpicFilter extends React.Component<{}, EpicFilterState> {
           onClick={this.onMenuToggle}
         >
           <span>
-            {this.state.selectedEpic
-              ? this.state.selectedEpic.name
+            {this.context.selectedEpic && this.context.selectedEpic.name
+              ? this.context.selectedEpic.name
               : "Filter by Epic"}
           </span>
           <svg
@@ -93,7 +84,7 @@ class EpicFilter extends React.Component<{}, EpicFilterState> {
         >
           <li
             style={{ backgroundColor: "#f4f5f7" }}
-            onClick={() => this.setState({ selectedEpic: undefined })}
+            onClick={() => this.context.selectEpic(undefined)}
           >
             Show all Epics
           </li>
@@ -101,7 +92,7 @@ class EpicFilter extends React.Component<{}, EpicFilterState> {
             <li
               key={index}
               className={epic.color}
-              onClick={() => this.selectEpic(epic)}
+              onClick={() => this.context.selectEpic(epic)}
             >
               {epic.name} ({epic.stories.length})
             </li>
