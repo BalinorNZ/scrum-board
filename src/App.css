@@ -12,7 +12,7 @@ select {
 .board-menu {
   position: absolute;
   right: 40px;
-  top: 0px;
+  top: 0;
 }
 
 .board-header {
@@ -537,6 +537,73 @@ select {
   position: relative;
   z-index: 999;
 }
+
+
+.epic-filter-dropdown {
+  top: -10px;
+}
+.epic-filter {
+  z-index: 10;
+  background-color: white;
+  position: absolute;
+  max-height: 80vh;
+  overflow-y: auto;
+  transition: all 0.3s cubic-bezier(0, 0, 0, 1.2) 0s;
+  margin: 0;
+  width: 100%;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  list-style-type: none;
+  padding: 0;
+  font-size: 14px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+.epic-filter > li {
+  line-height: 2rem;
+  text-align: left;
+  padding: 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.epic-filter > li:hover {
+  opacity: 0.8;
+ }
+.epic-filter-button {
+  display: flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem 0.2rem 0.8rem;
+  width: 280px;
+  justify-content: space-between;
+  background-color: #f4f5f7;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.epic-filter-button.open {
+  border-radius: 0;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+.epic-filter-button span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.epic-filter-button svg {
+  fill: currentColor;
+  width: 1.3em;
+  height: 1.3em;
+  font-size: 1.5rem;
+  transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  user-select: none;
+  top: calc(50% - 12px);
+  right: 0;
+  pointer-events: none;
+  color: rgb(66, 82, 110);
+}
+
+
 
 /*.color_0 {*/
 /*border-color: #FFE380;*/

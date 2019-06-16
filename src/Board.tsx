@@ -15,6 +15,7 @@ import Ellipsis from "./Ellipsis";
 import Separator from "./Separator";
 import groupBy from "lodash.groupby";
 import {BoardContext} from "./BoardContext";
+import EpicFilter from "./EpicFilter";
 
 const TRANSITIONS: any = {
   [STATUS.todo]: "11",
@@ -165,11 +166,14 @@ class Board extends Component<BoardProps, BoardState> {
           {this.context.stories.length === 0 ? (
             <Ellipsis />
           ) : (
-            <Avatars
-              selectAvatar={this.selectAvatar}
-              selectedAvatars={this.state.selectedAvatars}
-              subtasks={this.context.allSubtasks}
-            />
+            <>
+              <Avatars
+                selectAvatar={this.selectAvatar}
+                selectedAvatars={this.state.selectedAvatars}
+                subtasks={this.context.allSubtasks}
+              />
+              <EpicFilter />
+            </>
           )}
         </div>
         {this.context.stories.length === 0 ? (
