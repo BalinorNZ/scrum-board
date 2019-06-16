@@ -539,7 +539,6 @@ select {
   z-index: 999;
 }
 
-
 .epic-filter-dropdown {
   top: -10px;
 }
@@ -570,7 +569,7 @@ select {
 }
 .epic-filter > li:hover {
   opacity: 0.8;
- }
+}
 .epic-filter-button {
   display: flex;
   align-items: center;
@@ -603,8 +602,6 @@ select {
   pointer-events: none;
   color: rgb(66, 82, 110);
 }
-
-
 
 /*.color_0 {*/
 /*border-color: #FFE380;*/

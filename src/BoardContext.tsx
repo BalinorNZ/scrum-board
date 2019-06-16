@@ -9,6 +9,10 @@ type BoardContextState = {
   stories: Story[];
   allSubtasks: SubTask[];
   selectedEpic: Epic | undefined;
+  updateSubtasks: (subtasks: SubTask[]) => void;
+  updateStories: (stories: Story[]) => void;
+  saveSubtask: (subtask: SubTask, storyId: number) => void;
+  selectEpic: (epic: Epic | undefined) => void;
 };
 const defaultBoardContext: BoardContextState = {
   projectKey: "",
@@ -16,7 +20,11 @@ const defaultBoardContext: BoardContextState = {
   sprint: {} as Sprint,
   stories: [] as Story[],
   allSubtasks: [] as SubTask[],
-  selectedEpic: undefined
+  selectedEpic: undefined,
+  updateSubtasks: (subtasks: SubTask[]) => {},
+  updateStories: (stories: Story[]) => {},
+  saveSubtask: (subtask: SubTask, storyId: number) => {},
+  selectEpic: (epic: Epic | undefined) => {}
   // selectedAvatars: []
 };
 

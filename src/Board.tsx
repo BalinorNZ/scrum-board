@@ -1,11 +1,7 @@
 import React, { Component } from "react";
 import APIURL from "./ApiURL";
 import { RouteComponentProps } from "react-router";
-import {
-  STATUS,
-  Story,
-  SubTask
-} from "./JiraInterfaces";
+import { STATUS, Story, SubTask } from "./JiraInterfaces";
 import Spinner from "./Spinner";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import StorySubTasks from "./StorySubTasks";
@@ -14,7 +10,7 @@ import Avatars from "./Avatars";
 import Ellipsis from "./Ellipsis";
 import Separator from "./Separator";
 import groupBy from "lodash.groupby";
-import {BoardContext} from "./BoardContext";
+import { BoardContext } from "./BoardContext";
 import EpicFilter from "./EpicFilter";
 
 const TRANSITIONS: any = {
@@ -33,8 +29,7 @@ interface BoardState {
 interface BoardRouterProps {
   id: string;
 }
-interface BoardProps extends RouteComponentProps<BoardRouterProps> {
-}
+interface BoardProps extends RouteComponentProps<BoardRouterProps> {}
 
 class Board extends Component<BoardProps, BoardState> {
   static contextType = BoardContext;
@@ -87,7 +82,10 @@ class Board extends Component<BoardProps, BoardState> {
       })
     })
       .then(res => res.json())
-      .then(status => status.result === 204 && this.context.updateSubtasks(allSubtasks));
+      .then(
+        status =>
+          status.result === 204 && this.context.updateSubtasks(allSubtasks)
+      );
   };
   transitionStory = (statusId: string, storyId: string) => {
     let stories = this.context.stories;
@@ -104,7 +102,9 @@ class Board extends Component<BoardProps, BoardState> {
       })
     })
       .then(res => res.json())
-      .then(status => status.result === 204 && this.context.updateStories(stories));
+      .then(
+        status => status.result === 204 && this.context.updateStories(stories)
+      );
   };
   isBlocked = (id: string) => {
     const story: Story =
@@ -119,10 +119,16 @@ class Board extends Component<BoardProps, BoardState> {
   };
 
   render() {
-    const storiesFilteredByEpic = this.context.selectedEpic ? this.context.stories.filter((story: Story) => {
-      if(this.context.selectedEpic.key === null && !story.fields.epic) return true;
-      return story.fields.epic && story.fields.epic.key === this.context.selectedEpic.key;
-    }) : this.context.stories;
+    const storiesFilteredByEpic = this.context.selectedEpic
+      ? this.context.stories.filter((story: Story) => {
+          if (this.context.selectedEpic.key === null && !story.fields.epic)
+            return true;
+          return (
+            story.fields.epic &&
+            story.fields.epic.key === this.context.selectedEpic.key
+          );
+        })
+      : this.context.stories;
     const storiesFilteredByAssignees = this.state.selectedAvatars.length
       ? storiesFilteredByEpic.filter((story: Story) => {
           const storyAssignees = [
@@ -205,7 +211,9 @@ class Board extends Component<BoardProps, BoardState> {
                     story={story}
                     selectedAvatars={this.state.selectedAvatars}
                     transitionStory={this.transitionStory}
-                    assignees={getAssigneeListFromSubtasks(this.context.allSubtasks)}
+                    assignees={getAssigneeListFromSubtasks(
+                      this.context.allSubtasks
+                    )}
                   />
                 ))}
               </ul>
@@ -238,7 +246,9 @@ class Board extends Component<BoardProps, BoardState> {
                       story={story}
                       selectedAvatars={this.state.selectedAvatars}
                       transitionStory={this.transitionStory}
-                      assignees={getAssigneeListFromSubtasks(this.context.allSubtasks)}
+                      assignees={getAssigneeListFromSubtasks(
+                        this.context.allSubtasks
+                      )}
                     />
                     <DragDropContext onDragEnd={this.onDragEnd}>
                       <div className="story-subtask-groups">
@@ -309,7 +319,9 @@ class Board extends Component<BoardProps, BoardState> {
                     story={story}
                     selectedAvatars={this.state.selectedAvatars}
                     transitionStory={this.transitionStory}
-                    assignees={getAssigneeListFromSubtasks(this.context.allSubtasks)}
+                    assignees={getAssigneeListFromSubtasks(
+                      this.context.allSubtasks
+                    )}
                   />
                 ))}
               </ul>
@@ -329,9 +341,9 @@ function getAssigneeListFromSubtasks(subtasks: SubTask[]) {
     (subtask: SubTask) =>
       subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
   );
-  return Object.keys(groupedSubtasks).map((key: any) => (
-    groupedSubtasks[key][0].fields.assignee || { displayName: "" }
-  ));
+  return Object.keys(groupedSubtasks).map(
+    (key: any) => groupedSubtasks[key][0].fields.assignee || { displayName: "" }
+  );
 }
 
 function sumStorypoints(stories: Story[]) {
