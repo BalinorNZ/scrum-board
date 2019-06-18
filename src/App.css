@@ -490,6 +490,10 @@ select {
   display: block;
   margin-top: 20px;
 }
+.subtask-modal-description {
+  white-space: pre;
+  font-size: 16px;
+}
 
 .modal-bg {
   background-color: rgba(0, 0, 0, 0.65);

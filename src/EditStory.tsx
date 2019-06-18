@@ -10,7 +10,7 @@ const EditStory = (props: EditStoryProps) => {
     <div className="subtask-modal">
       <span className="subtask-modal-issue-id">{story.key}</span>
       <h1>{story.fields.summary}</h1>
-      <p>{story.fields.description}</p>
+      <p className="subtask-modal-description">{story.fields.description}</p>
       <h2 className="subtask-modal-status-title">Assignee</h2>
       <img
         title={story.fields.assignee && story.fields.assignee.displayName}
