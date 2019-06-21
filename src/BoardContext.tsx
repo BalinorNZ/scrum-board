@@ -42,9 +42,9 @@ class BoardContextProvider extends React.Component<
 > {
   public state = defaultBoardContext;
 
-  async componentWillReceiveProps(newProps: BoardContextProps) {
-    const sprint = await this.fetchSprint(newProps.boardId);
-    const stories = await this.fetchStories(newProps.boardId);
+  async componentDidMount() {
+    const sprint = await fetchSprint(this.props.boardId);
+    const stories = await fetchStories(this.props.boardId);
     const allSubtasks =
       stories &&
       stories.reduce(
@@ -52,8 +52,8 @@ class BoardContextProvider extends React.Component<
         []
       );
     this.setState({
-      projectKey: newProps.projectKey,
-      boardId: newProps.boardId,
+      projectKey: this.props.projectKey,
+      boardId: this.props.boardId,
       sprint,
       stories,
       allSubtasks
@@ -61,21 +61,27 @@ class BoardContextProvider extends React.Component<
     // TODO: disable auto-refresh during dev
     //setInterval(() => this.fetchStories(), 20000);
   }
-
-  private fetchSprint = async (boardId: number) => {
-    return fetch(`${APIURL}/board/${boardId}/sprint`, {
-      method: "get"
-    })
-      .then(res => res.json())
-      .then(({ sprint }) => sprint);
-  };
-  private fetchStories = async (boardId: number) => {
-    return fetch(`${APIURL}/board/${boardId}`, {
-      method: "get"
-    })
-      .then(res => res.json())
-      .then(({ stories }) => stories);
-  };
+  async componentDidUpdate(
+    prevProps: BoardContextProps,
+    prevState: BoardContextState
+  ) {
+    if (prevState.boardId === this.props.boardId) return;
+    const sprint = await fetchSprint(this.props.boardId);
+    const stories = await fetchStories(this.props.boardId);
+    const allSubtasks =
+      stories &&
+      stories.reduce(
+        (acc: SubTask[], cur: Story) => acc.concat(cur.fields.subtasks),
+        []
+      );
+    this.setState({
+      projectKey: this.props.projectKey,
+      boardId: this.props.boardId,
+      sprint,
+      stories,
+      allSubtasks
+    });
+  }
 
   public updateSubtasks = (subtasks: SubTask[]) => {
     this.setState({ allSubtasks: subtasks });
@@ -111,3 +117,18 @@ class BoardContextProvider extends React.Component<
   }
 }
 export default BoardContextProvider;
+
+const fetchSprint = async (boardId: number) => {
+  return fetch(`${APIURL}/board/${boardId}/sprint`, {
+    method: "get"
+  })
+    .then(res => res.json())
+    .then(({ sprint }) => sprint);
+};
+const fetchStories = async (boardId: number) => {
+  return fetch(`${APIURL}/board/${boardId}`, {
+    method: "get"
+  })
+    .then(res => res.json())
+    .then(({ stories }) => stories);
+};
