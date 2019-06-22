@@ -162,21 +162,21 @@ class Board extends Component<BoardProps, BoardState> {
     return (
       <div className="board">
         <div className="board-header">
-          <div>
-            <span className="sprint-title">{this.context.sprint.name}</span>
-            <span className="story-count">
-              {this.context.stories.length} stories
-            </span>
-            <p className="sprint-dates">
-              <span>{formatDate(this.context.sprint.startDate)}</span>
-              <span className="divider">•</span>
-              <span>{formatDate(this.context.sprint.endDate)}</span>
-            </p>
-          </div>
-          {this.context.stories.length === 0 ? (
+          {this.context.isFetching ? (
             <Ellipsis />
           ) : (
             <>
+              <div>
+                <span className="sprint-title">{this.context.sprint.name}</span>
+                <span className="story-count">
+                  {this.context.stories.length} stories
+                </span>
+                <p className="sprint-dates">
+                  <span>{formatDate(this.context.sprint.startDate)}</span>
+                  <span className="divider">•</span>
+                  <span>{formatDate(this.context.sprint.endDate)}</span>
+                </p>
+              </div>
               <Avatars
                 selectAvatar={this.selectAvatar}
                 selectedAvatars={this.state.selectedAvatars}
@@ -186,7 +186,7 @@ class Board extends Component<BoardProps, BoardState> {
             </>
           )}
         </div>
-        {this.context.stories.length === 0 ? (
+        {this.context.isFetching ? (
           <Spinner />
         ) : (
           <ul className={"columns" + (this.state.hideTodo ? " hide-todo" : "")}>

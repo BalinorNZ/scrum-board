@@ -1,21 +1,21 @@
 import React, { Component } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  withRouter,
-  RouteComponentProps
-} from "react-router-dom";
+import { Router, Route } from "react-router-dom";
 import "./App.css";
 import APIURL from "./ApiURL";
 import Board from "./Board";
 import { Authenticate } from "./Auth";
 import { Board as JiraBoard } from "./JiraInterfaces";
-import BoardContextProvider from "./BoardContext";
+import { createBrowserHistory } from "history";
+import { BoardContext } from "./BoardContext";
+
+const history = createBrowserHistory();
 
 class App extends Component {
+  static contextType = BoardContext;
   state = {
     boards: [],
-    authenticated: false
+    authenticated: false,
+    isFetching: false
   };
   componentDidMount() {
     fetch(`${APIURL}/`, {
@@ -32,68 +32,48 @@ class App extends Component {
         return res.json();
       })
       .then(boards => {
+        const boardId = history.location.pathname.substring(
+          history.location.pathname.lastIndexOf("/") + 1
+        );
+        this.context.updateBoardId(parseInt(boardId));
         this.setState({ boards });
       });
   }
+  onChange = (e: React.FormEvent<HTMLSelectElement>) => {
+    this.context.updateIsFetching(true);
+    const selectedBoard: JiraBoard =
+      this.state.boards.find(
+        (board: JiraBoard) => board.id === parseInt(e.currentTarget.value)
+      ) || ({} as JiraBoard);
+    const projectKey =
+      selectedBoard &&
+      selectedBoard.location &&
+      selectedBoard.location.projectKey;
+    this.context.updateProjectKey(projectKey);
+    this.context.updateBoardId(parseInt(e.currentTarget.value));
+    history.push(`/board/${e.currentTarget.value}`);
+  };
   render() {
     return !this.state.authenticated ? (
       <Authenticate />
     ) : (
-      <Router>
+      <Router history={history}>
         <div className="App">
-          <BoardMenu boards={this.state.boards} />
+          <select className="board-menu" onChange={this.onChange}>
+            <option value="Select a board">Select a board</option>
+            {this.state.boards.map((board: JiraBoard) => (
+              <option value={`${board.id}`} key={board.id}>
+                {board.name}
+              </option>
+            ))}
+          </select>
           <Route path="/" exact component={Welcome} />
-          <Route
-            path="/board/:id"
-            exact
-            render={routeProps => {
-              const selectedBoard: JiraBoard =
-                this.state.boards.find(
-                  (board: JiraBoard) =>
-                    board.id === parseInt(routeProps.match.params.id)
-                ) || ({} as JiraBoard);
-              const projectKey =
-                selectedBoard &&
-                selectedBoard.location &&
-                selectedBoard.location.projectKey;
-              return (
-                <BoardContextProvider
-                  projectKey={projectKey}
-                  boardId={parseInt(routeProps.match.params.id)}
-                >
-                  <Board {...routeProps} />
-                </BoardContextProvider>
-              );
-            }}
-          />
+          <Route path="/board/:id" exact component={Board} />
         </div>
       </Router>
     );
   }
 }
 export default App;
-
-type PathParamsType = {};
-type BoardSelectProps = RouteComponentProps<PathParamsType> & {
-  boards: any[];
-};
-class BoardSelect extends Component<BoardSelectProps> {
-  onChange = (e: React.FormEvent<HTMLSelectElement>) => {
-    this.props.history.push(`${e.currentTarget.value}`);
-  };
-  render() {
-    return (
-      <select className="board-menu" onChange={this.onChange}>
-        <option value="Select a board">Select a board</option>
-        {this.props.boards.map((board: any) => (
-          <option value={`/board/${board.id}`} key={board.id}>
-            {board.name}
-          </option>
-        ))}
-      </select>
-    );
-  }
-}
-const BoardMenu = withRouter(BoardSelect);
 
 const Welcome = () => <div>Welcome! Please select a board to view.</div>;

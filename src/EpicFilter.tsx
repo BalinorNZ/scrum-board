@@ -44,7 +44,6 @@ class EpicFilter extends React.Component<{}, EpicFilterState> {
     const buttonBg = this.context.selectedEpic
       ? this.context.selectedEpic.color
       : "auto";
-    console.log(epicList);
     return (
       <div
         className="epic-filter-dropdown"

@@ -9,6 +9,10 @@ type BoardContextState = {
   stories: Story[];
   allSubtasks: SubTask[];
   selectedEpic: Epic | undefined;
+  isFetching: boolean;
+  updateIsFetching: (isFetching: boolean) => void;
+  updateBoardId: (boardId: number) => void;
+  updateProjectKey: (projectKey: string) => void;
   updateSubtasks: (subtasks: SubTask[]) => void;
   updateStories: (stories: Story[]) => void;
   saveSubtask: (subtask: SubTask, storyId: number) => void;
@@ -21,6 +25,10 @@ const defaultBoardContext: BoardContextState = {
   stories: [] as Story[],
   allSubtasks: [] as SubTask[],
   selectedEpic: undefined,
+  isFetching: true,
+  updateIsFetching: (isFetching: boolean) => {},
+  updateBoardId: (boardId: number) => {},
+  updateProjectKey: (projectKey: string) => {},
   updateSubtasks: (subtasks: SubTask[]) => {},
   updateStories: (stories: Story[]) => {},
   saveSubtask: (subtask: SubTask, storyId: number) => {},
@@ -28,23 +36,17 @@ const defaultBoardContext: BoardContextState = {
   // selectedAvatars: []
 };
 
-type BoardContextProps = {
-  projectKey: string;
-  boardId: number;
-};
 export const BoardContext = React.createContext<BoardContextState>(
   defaultBoardContext
 );
 
-class BoardContextProvider extends React.Component<
-  BoardContextProps,
-  BoardContextState
-> {
+class BoardContextProvider extends React.Component<{}, BoardContextState> {
   public state = defaultBoardContext;
 
-  async componentDidMount() {
-    const sprint = await fetchSprint(this.props.boardId);
-    const stories = await fetchStories(this.props.boardId);
+  async componentDidUpdate(prevProps: {}, prevState: BoardContextState) {
+    if (prevState.boardId === this.state.boardId) return;
+    const sprint = await fetchSprint(this.state.boardId);
+    const stories = await fetchStories(this.state.boardId);
     const allSubtasks =
       stories &&
       stories.reduce(
@@ -52,8 +54,9 @@ class BoardContextProvider extends React.Component<
         []
       );
     this.setState({
-      projectKey: this.props.projectKey,
-      boardId: this.props.boardId,
+      projectKey: this.state.projectKey,
+      boardId: this.state.boardId,
+      isFetching: false,
       sprint,
       stories,
       allSubtasks
@@ -61,28 +64,15 @@ class BoardContextProvider extends React.Component<
     // TODO: disable auto-refresh during dev
     //setInterval(() => this.fetchStories(), 20000);
   }
-  async componentDidUpdate(
-    prevProps: BoardContextProps,
-    prevState: BoardContextState
-  ) {
-    if (prevState.boardId === this.props.boardId) return;
-    const sprint = await fetchSprint(this.props.boardId);
-    const stories = await fetchStories(this.props.boardId);
-    const allSubtasks =
-      stories &&
-      stories.reduce(
-        (acc: SubTask[], cur: Story) => acc.concat(cur.fields.subtasks),
-        []
-      );
-    this.setState({
-      projectKey: this.props.projectKey,
-      boardId: this.props.boardId,
-      sprint,
-      stories,
-      allSubtasks
-    });
-  }
-
+  public updateIsFetching = (isFetching: boolean) => {
+    this.setState({ isFetching });
+  };
+  public updateBoardId = (boardId: number) => {
+    this.setState({ boardId });
+  };
+  public updateProjectKey = (projectKey: string) => {
+    this.setState({ projectKey });
+  };
   public updateSubtasks = (subtasks: SubTask[]) => {
     this.setState({ allSubtasks: subtasks });
   };
@@ -105,6 +95,9 @@ class BoardContextProvider extends React.Component<
       <BoardContext.Provider
         value={{
           ...this.state,
+          updateIsFetching: this.updateIsFetching,
+          updateBoardId: this.updateBoardId,
+          updateProjectKey: this.updateProjectKey,
           updateSubtasks: this.updateSubtasks,
           updateStories: this.updateStories,
           saveSubtask: this.saveSubtask,
