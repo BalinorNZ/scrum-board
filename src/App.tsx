@@ -32,8 +32,11 @@ class App extends Component {
         return res.json();
       })
       .then(boards => {
-        const boardId = history.location.pathname.substring(
-          history.location.pathname.lastIndexOf("/") + 1
+        const pathname = history.location.pathname;
+        // get the board id (eg 108) from end of path (eg /board/108)
+        const boardId = pathname.substring(pathname.lastIndexOf("/") + 1);
+        this.context.updateProjectKey(
+          getProjectKeyFromBoardList(boards, parseInt(boardId))
         );
         this.context.updateBoardId(parseInt(boardId));
         this.setState({ boards });
@@ -41,17 +44,13 @@ class App extends Component {
   }
   onChange = (e: React.FormEvent<HTMLSelectElement>) => {
     this.context.updateIsFetching(true);
-    const selectedBoard: JiraBoard =
-      this.state.boards.find(
-        (board: JiraBoard) => board.id === parseInt(e.currentTarget.value)
-      ) || ({} as JiraBoard);
-    const projectKey =
-      selectedBoard &&
-      selectedBoard.location &&
-      selectedBoard.location.projectKey;
-    this.context.updateProjectKey(projectKey);
-    this.context.updateBoardId(parseInt(e.currentTarget.value));
-    history.push(`/board/${e.currentTarget.value}`);
+    const boardId = e.currentTarget.value;
+    const boards = this.state.boards as [];
+    this.context.updateProjectKey(
+      getProjectKeyFromBoardList(boards, parseInt(boardId))
+    );
+    this.context.updateBoardId(parseInt(boardId));
+    history.push(`/board/${boardId}`);
   };
   render() {
     return !this.state.authenticated ? (
@@ -75,5 +74,14 @@ class App extends Component {
   }
 }
 export default App;
+
+const getProjectKeyFromBoardList = (boards: [], boardId: number) => {
+  const selectedBoard: JiraBoard =
+    boards.find((board: JiraBoard) => board.id === boardId) ||
+    ({} as JiraBoard);
+  return (
+    selectedBoard && selectedBoard.location && selectedBoard.location.projectKey
+  );
+};
 
 const Welcome = () => <div>Welcome! Please select a board to view.</div>;
