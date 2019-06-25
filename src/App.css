@@ -25,7 +25,7 @@ select {
 }
 .sprint-title {
   margin-left: 20px;
-  color: #333;
+  color: black;
   font-size: 14px;
   font-weight: bold;
 }
@@ -114,7 +114,7 @@ select {
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 2px;
-  color: #333;
+  color: black;
   /*cursor: move;*/
   font-size: 14px;
   margin: 8px 8px;
@@ -214,7 +214,7 @@ select {
   text-decoration: none;
   box-sizing: border-box;
   background-color: white;
-  color: #333; /*#42526e;*/
+  color: black; /*#42526e;*/
   font-size: 14px;
   line-height: 14px;
   font-weight: Normal;
@@ -368,7 +368,7 @@ select {
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 2px;
-  color: #333;
+  color: black;
   cursor: move;
   font-size: 14px;
   margin: 0;
