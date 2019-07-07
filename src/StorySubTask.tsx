@@ -1,4 +1,4 @@
-import { SubTask } from "./JiraInterfaces";
+import { Story, SubTask } from "./JiraInterfaces";
 import {
   DraggableProvidedDraggableProps,
   DraggableProvidedDragHandleProps
@@ -7,6 +7,7 @@ import { Component } from "react";
 import React from "react";
 import Modal from "./Modal";
 import EditSubTask from "./EditSubTask";
+import CreateSubTask from "./CreateSubTask";
 
 interface StorySubTaskProps {
   subtask: SubTask;
@@ -14,6 +15,8 @@ interface StorySubTaskProps {
   innerRef: any;
   draggableProps: DraggableProvidedDraggableProps | null;
   dragHandleProps: DraggableProvidedDragHandleProps | null;
+  story: Story;
+  assignees: any;
 }
 class StorySubTask extends Component<StorySubTaskProps> {
   state = { showModal: false };
@@ -53,7 +56,12 @@ class StorySubTask extends Component<StorySubTaskProps> {
         />
         {this.state.showModal ? (
           <Modal close={this.handleCloseModal}>
-            <EditSubTask subtask={subtask} />
+            <CreateSubTask
+              subtask={subtask}
+              story={this.props.story}
+              assignees={this.props.assignees}
+              close={this.handleCloseModal}
+            />
           </Modal>
         ) : null}
       </div>

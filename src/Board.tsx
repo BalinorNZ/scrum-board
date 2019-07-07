@@ -262,6 +262,9 @@ class Board extends Component<BoardProps, BoardState> {
                               story={story}
                               status={[STATUS.todo]}
                               selectedAvatars={this.state.selectedAvatars}
+                              assignees={getAssigneeListFromSubtasks(
+                                this.context.allSubtasks
+                              )}
                             />
                           )}
                         </Droppable>
@@ -276,6 +279,9 @@ class Board extends Component<BoardProps, BoardState> {
                               story={story}
                               status={[STATUS.inProgress, STATUS.blocked]}
                               selectedAvatars={this.state.selectedAvatars}
+                              assignees={getAssigneeListFromSubtasks(
+                                this.context.allSubtasks
+                              )}
                             />
                           )}
                         </Droppable>
@@ -299,6 +305,9 @@ class Board extends Component<BoardProps, BoardState> {
                               story={story}
                               status={[STATUS.done, STATUS.closed]}
                               selectedAvatars={this.state.selectedAvatars}
+                              assignees={getAssigneeListFromSubtasks(
+                                this.context.allSubtasks
+                              )}
                             />
                           )}
                         </Droppable>
