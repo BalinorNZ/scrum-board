@@ -80,10 +80,14 @@ class BoardContextProvider extends React.Component<{}, BoardContextState> {
     this.setState({ stories });
   };
   public saveSubtask = (subtask: SubTask, storyId: number) => {
-    const allSubtasks = [...this.state.allSubtasks, subtask];
     let stories = this.state.stories;
     const index = stories.findIndex((s: Story) => s.id === String(storyId));
-    stories[index].fields.subtasks.push(subtask);
+    // if there's a subtask set, update existing subtask instead of pushing new one
+    const allSubtasks = updateSubtasks(subtask, this.state.allSubtasks);
+    stories[index].fields.subtasks = updateSubtasks(
+      subtask,
+      stories[index].fields.subtasks
+    );
     this.setState({ stories, allSubtasks });
   };
   public selectEpic = (epic: Epic | undefined) => {
@@ -111,6 +115,18 @@ class BoardContextProvider extends React.Component<{}, BoardContextState> {
 }
 export default BoardContextProvider;
 
+const updateSubtasks = (subtask: SubTask, subtasks: SubTask[]): SubTask[] => {
+  const index = subtasks.findIndex(s => s.key === subtask.key);
+  if (index > 0) {
+    return [
+      ...subtasks.slice(0, index),
+      subtask,
+      ...subtasks.slice(index + 1)
+    ] as SubTask[];
+  } else {
+    return subtasks.concat(subtask);
+  }
+};
 const fetchSprint = async (boardId: number) => {
   return fetch(`${APIURL}/board/${boardId}/sprint`, {
     method: "get"

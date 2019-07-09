@@ -11,6 +11,7 @@ interface StorySubTasksProps {
   placeholder?: React.ReactElement<HTMLElement> | null;
   innerRef: any;
   snapshot: any;
+  assignees: any;
 }
 class StorySubTasks extends Component<StorySubTasksProps> {
   render() {
@@ -19,7 +20,8 @@ class StorySubTasks extends Component<StorySubTasksProps> {
       story,
       status,
       selectedAvatars,
-      placeholder
+      placeholder,
+      assignees
     } = this.props;
     let subtasks =
       story.fields.subtasks.length > 0
@@ -59,6 +61,8 @@ class StorySubTasks extends Component<StorySubTasksProps> {
                 innerRef={provided.innerRef}
                 subtask={subtask}
                 selectedAvatars={selectedAvatars}
+                story={story}
+                assignees={assignees}
               />
             )}
           </Draggable>
