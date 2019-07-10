@@ -2,7 +2,7 @@ import { STATUS, Story, SubTask } from "./JiraInterfaces";
 import React from "react";
 import Avatars from "./Avatars";
 import Modal from "./Modal";
-import CreateSubTask from "./CreateSubTask";
+import CreateEditSubTask from "./CreateEditSubTask";
 import EditStory from "./EditStory";
 
 interface StoryCardState {
@@ -115,7 +115,7 @@ class StoryCard extends React.Component<StoryProps> {
         </section>
         {this.state.showCreateSubtaskModal ? (
           <Modal close={this.handleCloseModal}>
-            <CreateSubTask
+            <CreateEditSubTask
               story={this.props.story}
               assignees={this.props.assignees}
               close={this.handleCloseModal}

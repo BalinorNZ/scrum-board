@@ -32,6 +32,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
     e.preventDefault();
     this.props.close();
     if (!this.state.subtaskSummary) return;
+    // TODO: reduce code duplication in edit/create modes
     if (this.props.subtask) {
       // EDIT MODE
       const body = {
@@ -49,14 +50,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
         .then(result => {
           if (result === 204) {
             if (!this.props.subtask) return;
-            // fetch the issue we just created and add it to the board
-            fetch(`${APIURL}/issue/${this.props.subtask.id}`, {
-              method: "get"
-            })
-              .then(res => res.json())
-              .then(issue => {
-                this.context.saveSubtask(issue, this.props.story.id);
-              });
+            this.updateSubtaskOnBoard(this.props.subtask.id);
           } else {
             console.log("Failed to update subtask!");
           }
@@ -89,18 +83,20 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
       })
         .then(res => res.json())
         .then(result => {
-          // fetch the issue we just created and add it to the board
-          fetch(`${APIURL}/issue/${result.id}`, {
-            method: "get"
-          })
-            .then(res => res.json())
-            .then(issue => {
-              console.log(issue);
-              console.log(this.props.story.id);
-              this.context.saveSubtask(issue, this.props.story.id);
-            });
+          this.updateSubtaskOnBoard(result.id);
         });
     }
+  };
+  // TODO: could refactor this code into saveSubtask() in board context
+  updateSubtaskOnBoard = (subtaskId: string) => {
+    // fetch the issue we just created and add it to the board
+    fetch(`${APIURL}/issue/${subtaskId}`, {
+      method: "get"
+    })
+      .then(res => res.json())
+      .then(issue => {
+        this.context.saveSubtask(issue, this.props.story.id);
+      });
   };
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ subtaskSummary: e.target.value });
@@ -131,29 +127,35 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
             ""
           )}
           <h2 className="subtask-modal-status-title">Assignee</h2>
-          {this.props.assignees.map((assignee: Actor, index: number) => {
-            return (
-              <div
+          {this.props.assignees.map((assignee: Actor, index: number) => (
+            <div
+              key={index}
+              className={
+                this.state.selectedAvatar &&
+                this.state.selectedAvatar === assignee.accountId
+                  ? "avatar-with-count selected"
+                  : "avatar-with-count"
+              }
+              onClick={e => this.selectAvatar(e, assignee)}
+            >
+              <img
+                title={assignee.displayName}
                 key={index}
-                className={
-                  this.state.selectedAvatar &&
-                  this.state.selectedAvatar === assignee.accountId
-                    ? "avatar-with-count selected"
-                    : "avatar-with-count"
-                }
-                onClick={e => this.selectAvatar(e, assignee)}
-              >
-                <img
-                  title={assignee.displayName}
-                  key={index}
-                  alt="assignee avatar"
-                  className="avatar"
-                  src={assignee.avatarUrls["48x48"]}
-                />
-              </div>
-            );
-          })}
+                alt="assignee avatar"
+                className="avatar"
+                src={assignee.avatarUrls["48x48"]}
+              />
+            </div>
+          ))}
           {/* TODO: add 'status' toggle thing here */}
+          {this.props.subtask ? (
+            <>
+            <h2 className="subtask-modal-status-title">Status</h2>
+            <div className="subtask-modal-status">{this.props.subtask.fields.status.name}</div>
+            </>
+          ) : (
+            ""
+          )}
           <input
             className="subtask-modal-save-button"
             type="submit"
