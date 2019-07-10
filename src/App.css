@@ -459,8 +459,8 @@ select {
   line-height: 12px;
 }
 .subtask-modal-status {
-  color: rgb(255, 255, 255);
-  background: rgb(0, 82, 204);
+  color: black;
+  background: rgb(223, 225, 230);
   height: 2.3em;
   line-height: 2.3em;
   border-radius: 3px;

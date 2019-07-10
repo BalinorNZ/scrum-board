@@ -6,8 +6,7 @@ import {
 import { Component } from "react";
 import React from "react";
 import Modal from "./Modal";
-import EditSubTask from "./EditSubTask";
-import CreateSubTask from "./CreateSubTask";
+import CreateEditSubTask from "./CreateEditSubTask";
 
 interface StorySubTaskProps {
   subtask: SubTask;
@@ -56,7 +55,7 @@ class StorySubTask extends Component<StorySubTaskProps> {
         />
         {this.state.showModal ? (
           <Modal close={this.handleCloseModal}>
-            <CreateSubTask
+            <CreateEditSubTask
               subtask={subtask}
               story={this.props.story}
               assignees={this.props.assignees}
