@@ -479,8 +479,7 @@ select {
   padding: 0 8px;
   color: rgb(9, 30, 66);
 }
-.subtask-modal-save-button {
-  background-color: rgb(0, 82, 204);
+.subtask-modal-button {
   color: white;
   border: none;
   height: 40px;
@@ -490,6 +489,19 @@ select {
   font-size: 20px;
   display: block;
   margin-top: 20px;
+  cursor: pointer;
+}
+.right {
+  float: right;
+}
+.left {
+  float: left;
+}
+.background-blue {
+  background-color: rgb(0, 82, 204);
+}
+.background-red {
+  background-color: rgb(234, 37, 15);
 }
 .subtask-modal-description {
   white-space: pre-wrap;
