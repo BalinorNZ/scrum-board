@@ -101,6 +101,10 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ subtaskSummary: e.target.value });
   };
+  confirmDelete = () => {
+    if(!this.props.subtask) return;
+    console.log("Are you sure you want to delete this subtask?" + this.props.subtask.fields.summary);
+  };
   render() {
     return (
       <div className="subtask-modal">
@@ -157,10 +161,17 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
             ""
           )}
           <input
-            className="subtask-modal-save-button"
+            className={"subtask-modal-button background-blue" + (this.props.subtask ? " left" : "")}
             type="submit"
             value="Save"
           />
+          {this.props.subtask &&
+          <button
+            className="subtask-modal-button background-red right"
+            type="button"
+            onClick={() => this.confirmDelete()}
+          >Delete</button>
+          }
         </form>
       </div>
     );
