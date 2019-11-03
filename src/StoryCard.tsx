@@ -109,7 +109,9 @@ class StoryCard extends React.Component<StoryProps> {
           <img
             className="priority"
             alt="priority icon"
-            src={story.fields.priority.iconUrl}
+            src={
+              story.fields.priority ? story.fields.priority.iconUrl : undefined
+            }
           />
           <span className="storypoints">{story.fields.customfield_10806}</span>
         </section>
