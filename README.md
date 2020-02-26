@@ -1,3 +1,17 @@
+## Scrum Board
+
+Webapp for visualizing and interacting with a Jira SCRUM project.
+
+* Subtasks arranged by the story they belong to and color coded by status
+* Story cards show Epic, story points, priority and breakdown of people that have subtasks on the story
+* Drag and drop subtasks to change status
+* Move stories between to-do/in-progress/done
+* Create, update and change assignee of subtasks
+* Filter cards by person or epic to help standup meetings run smoothly
+* Team members filter shows total subtasks in the sprint for each person
+
+![Screenshot of Scrum Board](![Image of Yaktocat](https://octodex.github.com/images/yaktocat.png)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
