@@ -10,7 +10,7 @@ Webapp for visualizing and interacting with a Jira SCRUM project.
 * Filter cards by person or epic to help standup meetings run smoothly
 * Team members filter shows total subtasks in the sprint for each person
 
-![Screenshot of Scrum Board](https://drive.google.com/file/d/1pBQUgghrwbtcvOqWN82uVWW6j5OfPTEZ/view?usp=sharing)
+![Screenshot of Scrum Board](https://lh5.googleusercontent.com/2G3NRsR4ccFW0TaC3rgV8AjbhKGTJlgisznsz6QAy-PEEbEbV_eSqkMgDsRaE2-EcF_GBasntrd2-UzJ6mQH=w1400-h907-rw)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
