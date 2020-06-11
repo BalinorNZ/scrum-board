@@ -627,6 +627,17 @@ select {
 /*border-color: #FFE380;*/
 /*background-color: #FFE380;*/
 /*}*/
+.dark_green, .dark_teal, .grey, .unset_color {
+  color: white;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.unset_color {
+  color: black;
+  border-color: #ccc;
+  background-color: #ccc;
+}
 .color_1 {
   border-color: #42526e;
   background-color: #42526e;
@@ -644,9 +655,9 @@ select {
   border-color: #4c9aff;
   background-color: #4c9aff;
 }
-.color_5 {
-  border-color: #00c7e6;
-  background-color: #00c7e6;
+.dark_green {
+  border-color: rgb(0, 135, 90);
+  background-color: rgb(0, 135, 90);
 }
 .color_6 {
   border-color: #79f2c0;
@@ -664,9 +675,10 @@ select {
   border-color: #ffbdad;
   background-color: #ffbdad;
 }
-.color_10 {
-  border-color: #b3d4ff;
-  background-color: #b3d4ff;
+.grey {
+  color: rgb(66, 82, 110);
+  border-color: rgb(235, 236, 240);
+  background-color: rgb(235, 236, 240);
 }
 .color_11 {
   border-color: #79e2f2;
@@ -676,9 +688,9 @@ select {
   border-color: #ebecf0;
   background-color: #ebecf0;
 }
-.color_13 {
-  border-color: #57d9a3;
-  background-color: #57d9a3;
+.dark_teal {
+  border-color: rgb(0, 163, 191);
+  background-color: rgb(0, 163, 191);
 }
 .color_14 {
   border-color: #ff8f73;

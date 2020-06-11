@@ -48,7 +48,7 @@ class StoryCard extends React.Component<StoryProps> {
   render() {
     const { story, selectedAvatars } = this.props;
     const epicColor =
-      (story.fields.epic && story.fields.epic.color && story.fields.epic.color.key) || "color_7";
+      (story.fields.epic && story.fields.epic.color) || "";
 
     return (
       <li className="story" key={story.id}>

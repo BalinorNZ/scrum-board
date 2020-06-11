@@ -91,6 +91,7 @@ class BoardContextProvider extends React.Component<{}, BoardContextState> {
     this.setState({ stories, allSubtasks });
   };
   public selectEpic = (epic: Epic | undefined) => {
+    console.log(epic);
     this.setState({ selectedEpic: epic });
   };
 
