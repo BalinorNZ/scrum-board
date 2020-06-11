@@ -34,8 +34,8 @@ class EpicFilter extends React.Component<{}, EpicFilterState> {
       (story: Story) => story.fields.epic && story.fields.epic.name
     );
     const epicList = Object.keys(groupedStories).map((key: string) => ({
-      name: key === "null" ? "No Epic Set" : key,
-      key: key === "null" ? null : groupedStories[key][0].fields.epic.key,
+      name: key === "null" || key === "undefined" ? "No Epic Set" : key,
+      key: key === "null" || key === "undefined" ? null : groupedStories[key][0].fields.epic.key,
       stories: groupedStories[key],
       color: groupedStories[key][0].fields.epic
         ? groupedStories[key][0].fields.epic.color && groupedStories[key][0].fields.epic.color.key
