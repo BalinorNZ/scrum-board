@@ -38,7 +38,7 @@ class EpicFilter extends React.Component<{}, EpicFilterState> {
       key: key === "null" ? null : groupedStories[key][0].fields.epic.key,
       stories: groupedStories[key],
       color: groupedStories[key][0].fields.epic
-        ? groupedStories[key][0].fields.epic.color.key
+        ? groupedStories[key][0].fields.epic.color && groupedStories[key][0].fields.epic.color.key
         : "#ccc"
     }));
     const buttonBg = this.context.selectedEpic

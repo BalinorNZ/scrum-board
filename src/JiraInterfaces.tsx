@@ -1,6 +1,6 @@
 export const STATUS = {
-  todo: "10010",
-  inProgress: "3",
+  todo: "10002",
+  inProgress: "10003",
   done: "10009",
   blocked: "10909",
   closed: "11111"
