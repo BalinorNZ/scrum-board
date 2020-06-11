@@ -106,6 +106,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
     console.log("Are you sure you want to delete this subtask?" + this.props.subtask.fields.summary);
   };
   render() {
+    console.log(this.props.subtask);
     return (
       <div className="subtask-modal">
         {this.props.subtask ? (
@@ -126,7 +127,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
             autoFocus
           />
           {this.props.subtask ? (
-            <p>{this.props.subtask.fields.description}</p>
+            <p>{this.props.subtask.fields.summary}</p>
           ) : (
             ""
           )}
