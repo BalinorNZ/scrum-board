@@ -119,7 +119,7 @@ class Board extends Component<BoardProps, BoardState> {
     const story: Story =
       this.context.stories.find((story: Story) => story.id === id) ||
       ({} as Story);
-    return story.fields.subtasks.filter(
+    return story.fields.status.id === STATUS.pendingReview || story.fields.subtasks.filter(
       (subtask: SubTask) => subtask.fields.status.id === STATUS.pendingReview
     ).length;
   };
@@ -157,15 +157,15 @@ class Board extends Component<BoardProps, BoardState> {
     const inProgress = storiesFilteredByAssignees.filter(
       (story: Story) =>
         story.fields.status.id === STATUS.inProgress ||
-        story.fields.status.id === STATUS.blocked
+        story.fields.status.id === STATUS.blocked ||
+        story.fields.status.id === STATUS.pendingReview
     );
     const toDo = storiesFilteredByAssignees.filter(
       (story: Story) => story.fields.status.id === STATUS.todo
     );
     const done = storiesFilteredByAssignees.filter(
       (story: Story) =>
-        story.fields.status.id === STATUS.done ||
-        story.fields.status.id === STATUS.pendingReview
+        story.fields.status.id === STATUS.done
     );
     return (
       <div className="board">
