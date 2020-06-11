@@ -88,6 +88,7 @@ interface StoryFields extends IssueFields {
     color: { key: string };
   };
   closedSprints: [];
+  customfield_10016: number;
   customfield_10806: number;
   customfield_11400?: Actor[];
   subtasks: SubTask[];

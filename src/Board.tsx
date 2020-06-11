@@ -357,7 +357,7 @@ function getAssigneeListFromSubtasks(subtasks: SubTask[]) {
 
 function sumStorypoints(stories: Story[]) {
   return stories.reduce(
-    (acc: number, cur: Story) => acc + cur.fields.customfield_10806,
+    (acc: number, cur: Story) => acc + cur.fields.customfield_10016,
     0
   );
 }

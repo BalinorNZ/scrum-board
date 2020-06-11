@@ -113,7 +113,7 @@ class StoryCard extends React.Component<StoryProps> {
               story.fields.priority ? story.fields.priority.iconUrl : undefined
             }
           />
-          <span className="storypoints">{story.fields.customfield_10806}</span>
+          <span className="storypoints">{story.fields.customfield_10016}</span>
         </section>
         {this.state.showCreateSubtaskModal ? (
           <Modal close={this.handleCloseModal}>
