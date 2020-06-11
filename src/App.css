@@ -342,6 +342,9 @@ select {
   background-color: rgb(255, 235, 235);
   /*color: rgb(166, 7, 7);*/
 }
+.pendingReview {
+  background-color: rgb(255, 255, 224);
+}
 .column-header .collapse-button {
   font-family: Proxima Nova, Helvetica Neue, Helvetica, sans-serif;
   font-weight: 800;
@@ -383,17 +386,17 @@ select {
 .subtask-card-status {
   width: 4px;
 }
-.subtask-card-status.status-id-3 {
+.subtask-card-status.status-id-10003 {
   background-color: rgb(66, 133, 244);
 }
-.subtask-card-status.status-id-10009 {
+.subtask-card-status.status-id-10004 {
   background-color: rgb(52, 168, 83);
 }
-.subtask-card-status.status-id-10010 {
+.subtask-card-status.status-id-10002 {
   background-color: #ccc;
 }
-.subtask-card-status.status-id-10909 {
-  background-color: rgb(234, 67, 53);
+.subtask-card-status.status-id-10046 {
+  background-color: rgb(243, 212, 11);
 }
 .subtask-card.dim {
   opacity: 0.4;

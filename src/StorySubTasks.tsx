@@ -39,8 +39,8 @@ class StorySubTasks extends Component<StorySubTasksProps> {
     const STATUS_COLOR: any = {
       10002: "rgb(223, 225, 230)",
       10003: "rgb(222, 235, 255)",
-      10009: "rgb(227, 252, 239)",
-      10909: "rgb(234, 67, 53)"
+      10004: "rgb(227, 252, 239)",
+      10046: "rgb(234, 67, 53)"
     };
     return (
       <div

@@ -1,9 +1,10 @@
 export const STATUS = {
   todo: "10002",
   inProgress: "10003",
-  done: "10009",
+  done: "10004",
   blocked: "10909",
-  closed: "11111"
+  closed: "11111",
+  pendingReview: "10046",
 };
 
 export interface SprintList {

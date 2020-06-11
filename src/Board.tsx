@@ -18,7 +18,8 @@ const TRANSITIONS: any = {
   [STATUS.inProgress]: "21",
   [STATUS.done]: "31",
   [STATUS.blocked]: "71",
-  [STATUS.closed]: "11111"
+  [STATUS.closed]: "11111",
+  [STATUS.pendingReview]: "",
 };
 
 interface BoardState {
@@ -114,6 +115,14 @@ class Board extends Component<BoardProps, BoardState> {
       (subtask: SubTask) => subtask.fields.status.id === STATUS.blocked
     ).length;
   };
+  isPendingReview = (id: string) => {
+    const story: Story =
+      this.context.stories.find((story: Story) => story.id === id) ||
+      ({} as Story);
+    return story.fields.subtasks.filter(
+      (subtask: SubTask) => subtask.fields.status.id === STATUS.pendingReview
+    ).length;
+  };
   handleCollapse = () => {
     this.setState({ hideTodo: !this.state.hideTodo });
   };
@@ -156,7 +165,7 @@ class Board extends Component<BoardProps, BoardState> {
     const done = storiesFilteredByAssignees.filter(
       (story: Story) =>
         story.fields.status.id === STATUS.done ||
-        story.fields.status.id === STATUS.closed
+        story.fields.status.id === STATUS.pendingReview
     );
     return (
       <div className="board">
@@ -237,7 +246,8 @@ class Board extends Component<BoardProps, BoardState> {
                   <div
                     className={
                       "story-with-subtasks" +
-                      (this.isBlocked(story.id) ? " blocked" : "")
+                      (this.isBlocked(story.id) ? " blocked" : "") +
+                      (this.isPendingReview(story.id) ? " pendingReview" : "")
                     }
                     key={story.id}
                   >
@@ -302,7 +312,7 @@ class Board extends Component<BoardProps, BoardState> {
                               placeholder={provided.placeholder}
                               {...provided.droppableProps}
                               story={story}
-                              status={[STATUS.done, STATUS.closed]}
+                              status={[STATUS.done, STATUS.pendingReview]}
                               selectedAvatars={this.state.selectedAvatars}
                               assignees={getAssigneeListFromSubtasks(
                                 this.context.allSubtasks
