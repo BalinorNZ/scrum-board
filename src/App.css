@@ -627,7 +627,7 @@ select {
 /*border-color: #FFE380;*/
 /*background-color: #FFE380;*/
 /*}*/
-.dark_green, .dark_teal, .grey, .unset_color {
+.dark_green, .dark_teal, .grey, .purple, .dark_purple, .unset_color {
   color: white;
   font-weight: 700;
   font-size: 11px;
@@ -663,13 +663,14 @@ select {
   border-color: #79f2c0;
   background-color: #79f2c0;
 }
-.color_7 {
-  border-color: #c0b6f2;
-  background-color: #c0b6f2;
+.purple {
+  color: rgb(64, 50, 148);
+  border-color: rgb(234, 230, 255);
+  background-color: rgb(234, 230, 255);
 }
-.color_8 {
-  border-color: #998dd9;
-  background-color: #998dd9;
+.dark_purple {
+  border-color: rgb(82, 67, 170);
+  background-color: rgb(82, 67, 170);
 }
 .color_9 {
   border-color: #ffbdad;
