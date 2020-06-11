@@ -71,7 +71,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
             }
           ]
         },
-        issuetype: { id: "5" },
+        issuetype: { id: "10009" },
         assignee: { id: this.state.selectedAvatar }
       };
       fetch(`${APIURL}/issue`, {
