@@ -11,7 +11,7 @@ const Avatars = ({ subtasks, selectAvatar, selectedAvatars }: AvatarsProps) => {
   const groupedSubtasks = groupBy(
     subtasks,
     (subtask: SubTask) =>
-      subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
+      subtask.fields.assignee && subtask.fields.assignee.avatarUrls["48x48"]
   );
   const teamMembers = Object.keys(groupedSubtasks).map((key: string) => ({
     assignee: groupedSubtasks[key][0].fields.assignee || null,

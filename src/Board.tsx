@@ -347,7 +347,7 @@ function getAssigneeListFromSubtasks(subtasks: SubTask[]) {
   const groupedSubtasks = groupBy(
     subtasks,
     (subtask: SubTask) =>
-      subtask.fields.assignee && subtask.fields.assignee.avatarUrls["32x32"]
+      subtask.fields.assignee && subtask.fields.assignee.avatarUrls["48x48"]
   );
   return Object.keys(groupedSubtasks).map(
     (key: any) => groupedSubtasks[key][0].fields.assignee || { displayName: "" }

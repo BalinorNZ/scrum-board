@@ -48,7 +48,8 @@ class StoryCard extends React.Component<StoryProps> {
   render() {
     const { story, selectedAvatars } = this.props;
     const epicColor =
-      (story.fields.epic && story.fields.epic.color && story.fields.epic.color.key) || "none";
+      (story.fields.epic && story.fields.epic.color && story.fields.epic.color.key) || "color_7";
+
     return (
       <li className="story" key={story.id}>
         <div
@@ -99,7 +100,7 @@ class StoryCard extends React.Component<StoryProps> {
               className="avatar"
               src={
                 story.fields.assignee &&
-                story.fields.assignee.avatarUrls["32x32"]
+                story.fields.assignee.avatarUrls["48x48"]
               }
             />
           )}
