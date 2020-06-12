@@ -231,12 +231,20 @@ select {
 }
 .story-details {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 3fr 2fr 2fr;
   align-items: center;
 }
 .issueid {
   color: #5e6c84;
   justify-self: start;
+  vertical-align: middle;
+}
+.issuetype {
+  height: 14px;
+  width: 14px;
+  padding-right: 3px;
+  padding-top: 3px;
+  vertical-align: text-top;
 }
 .priority {
   height: 16px;

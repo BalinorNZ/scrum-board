@@ -106,7 +106,16 @@ class StoryCard extends React.Component<StoryProps> {
           )}
         </section>
         <section className="story-details">
-          <span className="issueid">{story.key}</span>
+          <span className="issueid">
+            <img
+              className="issuetype"
+              alt="priority icon"
+              src={
+                story.fields.issuetype ? story.fields.issuetype.iconUrl : undefined
+              }
+            />
+            {story.key}
+          </span>
           <img
             className="priority"
             alt="priority icon"
