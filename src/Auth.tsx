@@ -26,7 +26,7 @@ export class Authenticate extends Component {
         >
           <h2>Scrum Board</h2>
           <p>
-            You must login with your ADI Google account to access this page.
+            You must login with your Google account to access this page.
           </p>
           <a
             className="google-button button large"
