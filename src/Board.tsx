@@ -13,13 +13,14 @@ import groupBy from "lodash.groupby";
 import { BoardContext } from "./BoardContext";
 import EpicFilter from "./EpicFilter";
 
+// TODO: refactor all the hardcoded IDs everywhere into a global const (status IDs and transition IDs etc)
 const TRANSITIONS: any = {
   [STATUS.todo]: "11",
   [STATUS.inProgress]: "21",
   [STATUS.done]: "31",
+  [STATUS.pendingReview]: "41",
   [STATUS.blocked]: "71",
   [STATUS.closed]: "11111",
-  [STATUS.pendingReview]: "",
 };
 
 interface BoardState {
@@ -294,7 +295,7 @@ class Board extends Component<BoardProps, BoardState> {
                             />
                           )}
                         </Droppable>
-                        <Droppable droppableId={STATUS.blocked}>
+                        <Droppable droppableId={STATUS.pendingReview}>
                           {(provided, snapshot) => (
                             <Separator
                               snapshot={snapshot}

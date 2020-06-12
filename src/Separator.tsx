@@ -14,7 +14,7 @@ class Separator extends Component<SeparatorProps> {
         ref={this.props.innerRef}
         style={{
           backgroundColor: snapshot.isDraggingOver
-            ? "rgb(234, 67, 53)"
+            ? "rgb(255, 199, 31)"
             : "inherit"
         }}
       >
