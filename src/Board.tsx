@@ -277,7 +277,7 @@ class Board extends Component<BoardProps, BoardState> {
                             />
                           )}
                         </Droppable>
-                        <div className="story-subtask-groups-separator" />
+                        <div className="story-subtask-groups-separator" style={{ backgroundColor: 'inherit' }} />
                         <Droppable droppableId={STATUS.inProgress}>
                           {(provided, snapshot) => (
                             <StorySubTasks
