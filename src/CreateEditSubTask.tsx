@@ -1,6 +1,6 @@
 import React from "react";
 import { Actor, Story, SubTask } from "./JiraInterfaces";
-import APIURL from "./ApiURL";
+import fetcher from "./ApiURL";
 import { BoardContext } from "./BoardContext";
 
 interface CreateSubTaskState {
@@ -39,13 +39,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
         summary: this.state.subtaskSummary,
         assignee: { id: this.state.selectedAvatar }
       };
-      fetch(`${APIURL}/issue/${this.props.subtask.key}`, {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      })
+      fetcher(`issue/${this.props.subtask.key}`,"post",{ "Content-Type": "application/json" }, JSON.stringify(body))
         .then(res => res.json())
         .then(result => {
           if (result === 204) {
@@ -74,13 +68,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
         issuetype: { id: "10009" },
         assignee: { id: this.state.selectedAvatar }
       };
-      fetch(`${APIURL}/issue`, {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      })
+      fetcher(`issue`,"post",{ "Content-Type": "application/json" }, JSON.stringify(body))
         .then(res => res.json())
         .then(result => {
           this.updateSubtaskOnBoard(result.id);
@@ -90,9 +78,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
   // TODO: could refactor this code into saveSubtask() in board context
   updateSubtaskOnBoard = (subtaskId: string) => {
     // fetch the issue we just created and add it to the board
-    fetch(`${APIURL}/issue/${subtaskId}`, {
-      method: "get"
-    })
+    fetcher(`issue/${subtaskId}`,"get")
       .then(res => res.json())
       .then(issue => {
         this.context.saveSubtask(issue, this.props.story.id);

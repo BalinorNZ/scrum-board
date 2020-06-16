@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import APIURL from "./ApiURL";
+import fetcher from "./ApiURL";
 import { RouteComponentProps } from "react-router";
 import { STATUS, Story, SubTask } from "./JiraInterfaces";
 import Spinner from "./Spinner";
@@ -74,17 +74,12 @@ class Board extends Component<BoardProps, BoardState> {
     let index = allSubtasks.findIndex((s: SubTask) => s.id === draggableId);
     allSubtasks[index].fields.status.id = destination.droppableId;
 
-    fetch(`${APIURL}/issue/${allSubtasks[index].id}/transitions`, {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        transition: { id: TRANSITIONS[destination.droppableId] }
-      })
-    })
-      .then(res => res.json())
-      .then(
+    fetcher(
+      `issue/${allSubtasks[index].id}/transitions`,
+      "post",
+      { "Content-Type": "application/json" },
+      JSON.stringify({ transition: { id: TRANSITIONS[destination.droppableId] } }),
+    ).then(res => res.json()).then(
         status =>
           status.result === 204 && this.context.updateSubtasks(allSubtasks)
       );
@@ -94,15 +89,12 @@ class Board extends Component<BoardProps, BoardState> {
     let index = stories.findIndex((s: Story) => s.id === storyId);
     stories[index].fields.status.id = statusId;
 
-    fetch(`${APIURL}/issue/${stories[index].id}/transitions`, {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        transition: { id: TRANSITIONS[statusId] }
-      })
-    })
+    fetcher(
+      `issue/${stories[index].id}/transitions`,
+      "post",
+      { "Content-Type": "application/json" },
+      JSON.stringify({ transition: { id: TRANSITIONS[statusId] } }),
+    )
       .then(res => res.json())
       .then(
         status => status.result === 204 && this.context.updateStories(stories)

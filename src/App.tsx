@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Router, Route } from "react-router-dom";
 import "./App.css";
-import APIURL from "./ApiURL";
+import fetcher from "./ApiURL";
 import Board from "./Board";
 import { Authenticate } from "./Auth";
 import { Board as JiraBoard } from "./JiraInterfaces";
@@ -18,9 +18,7 @@ class App extends Component {
     isFetching: false
   };
   componentDidMount() {
-    fetch(`${APIURL}/`, {
-      method: "get"
-    })
+    fetcher("", "get")
       .then(res => {
         if (res.status === 401) {
           console.log("Not authenticated");
@@ -35,6 +33,7 @@ class App extends Component {
         const pathname = history.location.pathname;
         // get the board id (eg 108) from end of path (eg /board/108)
         const boardId = pathname.substring(pathname.lastIndexOf("/") + 1);
+        if(!boards) return;
         this.context.updateProjectKey(
           getProjectKeyFromBoardList(boards, parseInt(boardId))
         );

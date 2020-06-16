@@ -1,7 +1,22 @@
 import React, { Component } from "react";
-import APIURL from "./ApiURL";
 
 export class Authenticate extends Component {
+  onSubmit = (e: any) => {
+    const loginURL: string = process.env.NODE_ENV && process.env.NODE_ENV === "production"
+        ? "/login"
+        : "http://localhost:8080/login";
+    fetch(loginURL, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ username: e.currentTarget.username.value, password: e.currentTarget.password.value})
+    })
+      .then(res => res.json())
+      .then(result => {
+        localStorage.setItem('scrumboard-token', result.token);
+    });
+  };
   render() {
     return (
       <div
@@ -26,14 +41,19 @@ export class Authenticate extends Component {
         >
           <h2>Scrum Board</h2>
           <p>
-            You must login with your Google account to access this page.
+            You must login to access this page.
           </p>
-          <a
-            className="google-button button large"
-            href={APIURL + "/auth/google"}
-          >
-            <p className="button-text">Sign in with Google</p>
-          </a>
+          <form onSubmit={this.onSubmit}>
+            <p>
+              Username:
+              <input type="text" name="username" />
+            </p>
+            <p>
+              Password:
+              <input type="password" name="password" />
+            </p>
+            <input type="submit" value="Login" />
+          </form>
         </div>
       </div>
     );
