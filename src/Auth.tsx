@@ -3,8 +3,8 @@ import React, { Component } from "react";
 export class Authenticate extends Component {
   onSubmit = (e: any) => {
     const loginURL: string = process.env.NODE_ENV && process.env.NODE_ENV === "production"
-        ? "/login"
-        : "http://localhost:8080/login";
+        ? "/api/login"
+        : "http://localhost:8080/api/login";
     fetch(loginURL, {
       method: "post",
       headers: {
