@@ -43,7 +43,7 @@ export class Authenticate extends Component {
           <p>
             You must login to access this page.
           </p>
-          <form onSubmit={this.onSubmit}>
+          <form method="post" onSubmit={this.onSubmit}>
             <p>
               Username:
               <input type="text" name="username" />
