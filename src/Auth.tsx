@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 export class Authenticate extends Component {
   onSubmit = (e: any) => {
+    e.preventDefault();
     const loginURL: string = process.env.NODE_ENV && process.env.NODE_ENV === "production"
         ? "/api/login"
         : "http://localhost:8080/api/login";
@@ -15,6 +16,7 @@ export class Authenticate extends Component {
       .then(res => res.json())
       .then(result => {
         localStorage.setItem('scrumboard-token', result.token);
+        window.location.reload();
     });
   };
   render() {
