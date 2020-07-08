@@ -12,6 +12,7 @@ import Separator from "./Separator";
 import groupBy from "lodash.groupby";
 import { BoardContext } from "./BoardContext";
 import EpicFilter from "./EpicFilter";
+import {getAvatar} from "./Utils";
 
 // TODO: refactor all the hardcoded IDs everywhere into a global const (status IDs and transition IDs etc)
 const TRANSITIONS: any = {
@@ -350,7 +351,7 @@ function getAssigneeListFromSubtasks(subtasks: SubTask[]) {
   const groupedSubtasks = groupBy(
     subtasks,
     (subtask: SubTask) =>
-      subtask.fields.assignee && subtask.fields.assignee.avatarUrls["48x48"]
+      subtask.fields.assignee && getAvatar(subtask.fields.assignee)
   );
   return Object.keys(groupedSubtasks).map(
     (key: any) => groupedSubtasks[key][0].fields.assignee || { displayName: "" }

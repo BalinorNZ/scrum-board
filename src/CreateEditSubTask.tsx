@@ -2,6 +2,8 @@ import React from "react";
 import { Actor, Story, SubTask } from "./JiraInterfaces";
 import fetcher from "./ApiURL";
 import { BoardContext } from "./BoardContext";
+import {getAvatar} from "./Utils";
+import UnassignedAvatar from "./UnassignedAvatar";
 
 interface CreateSubTaskState {
   subtaskSummary: string;
@@ -118,26 +120,30 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
             ""
           )}
           <h2 className="subtask-modal-status-title">Assignee</h2>
-          {this.props.assignees.map((assignee: Actor, index: number) => (
-            <div
-              key={index}
-              className={
-                this.state.selectedAvatar &&
-                this.state.selectedAvatar === assignee.accountId
-                  ? "avatar-with-count selected"
-                  : "avatar-with-count"
-              }
-              onClick={e => this.selectAvatar(e, assignee)}
-            >
-              <img
-                title={assignee.displayName}
+          {this.props.assignees.map((assignee: Actor, index: number) => {
+            return !getAvatar(assignee) ? (
+              <UnassignedAvatar large />
+            ) : (
+              <div
                 key={index}
-                alt="assignee avatar"
-                className="avatar"
-                src={assignee.avatarUrls["48x48"]}
-              />
-            </div>
-          ))}
+                className={
+                  this.state.selectedAvatar &&
+                  this.state.selectedAvatar === assignee.accountId
+                    ? "avatar-with-count selected"
+                    : "avatar-with-count"
+                }
+                onClick={e => this.selectAvatar(e, assignee)}
+              >
+                <img
+                  title={assignee.displayName}
+                  key={index}
+                  alt="assignee avatar"
+                  className="avatar"
+                  src={getAvatar(assignee)}
+                />
+              </div>
+            )
+            })}
           {/* TODO: add 'status' toggle thing here */}
           {this.props.subtask ? (
             <>

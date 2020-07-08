@@ -4,6 +4,7 @@ import Avatars from "./Avatars";
 import Modal from "./Modal";
 import CreateEditSubTask from "./CreateEditSubTask";
 import EditStory from "./EditStory";
+import {getAvatar} from "./Utils";
 
 interface StoryCardState {
   activeMenu: boolean;
@@ -100,7 +101,7 @@ class StoryCard extends React.Component<StoryProps> {
               className="avatar"
               src={
                 story.fields.assignee &&
-                story.fields.assignee.avatarUrls["48x48"]
+                getAvatar(story.fields.assignee)
               }
             />
           )}
