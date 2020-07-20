@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Epic, Sprint, Story, SubTask } from "./JiraInterfaces";
-import APIURL from "./ApiURL";
+import fetcher from "./ApiURL";
 
 type BoardContextState = {
   projectKey: string;
@@ -129,16 +129,12 @@ const updateSubtasks = (subtask: SubTask, subtasks: SubTask[]): SubTask[] => {
   }
 };
 const fetchSprint = async (boardId: number) => {
-  return fetch(`${APIURL}/board/${boardId}/sprint`, {
-    method: "get"
-  })
+  return fetcher(`board/${boardId}/sprint`,"get")
     .then(res => res.json())
     .then(({ sprint }) => sprint);
 };
 const fetchStories = async (boardId: number) => {
-  return fetch(`${APIURL}/board/${boardId}`, {
-    method: "get"
-  })
+  return fetcher(`board/${boardId}`,"get")
     .then(res => res.json())
     .then(({ stories }) => stories);
 };

@@ -59,8 +59,8 @@ a:hover {
   display: inline-block;
   background-color: transparent;
   border-radius: 50%;
-  height: 32px;
-  width: 32px;
+  height: 38px;
+  width: 38px;
   -webkit-box-align: stretch;
   align-items: stretch;
   box-sizing: content-box;
@@ -71,6 +71,15 @@ a:hover {
   outline: none;
   overflow: hidden;
   transition: background-color 0s ease-out 0s;
+  padding: 2px;
+}
+.avatar-unassigned.large-avatar {
+  height: 48px;
+  width: 48px;
+}
+.avatar-unassigned.small-avatar {
+  height: 24px;
+  width: 24px;
 }
 .avatar-unassigned circle {
   fill: rgb(193, 199, 208);
@@ -436,7 +445,7 @@ a:hover {
   max-height: 76px;
   padding-left: 7px;
 }
-.subtask-card img {
+.subtask-card img, .subtask-card svg {
   justify-self: end;
   align-self: center;
   width: 24px;

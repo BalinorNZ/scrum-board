@@ -7,6 +7,8 @@ import { Component } from "react";
 import React from "react";
 import Modal from "./Modal";
 import CreateEditSubTask from "./CreateEditSubTask";
+import {getAvatar} from "./Utils";
+import UnassignedAvatar from "./UnassignedAvatar";
 
 interface StorySubTaskProps {
   subtask: SubTask;
@@ -44,15 +46,20 @@ class StorySubTask extends Component<StorySubTaskProps> {
           }
         />
         <p onClick={this.handleSubTaskClick}>{subtask.fields.summary}</p>
-        <img
-          title={subtask.fields.assignee && subtask.fields.assignee.displayName}
-          alt=""
-          className="avatar"
-          src={
-            subtask.fields.assignee &&
-            subtask.fields.assignee.avatarUrls["24x24"]
-          }
-        />
+        { !getAvatar(subtask.fields.assignee) ? (
+          <UnassignedAvatar small />
+        ) : (
+          <img
+            title={subtask.fields.assignee && subtask.fields.assignee.displayName}
+            alt=""
+            className="avatar"
+            src={
+              subtask.fields.assignee &&
+              subtask.fields.assignee.avatarUrls["24x24"]
+            }
+          />
+        )
+        }
         {this.state.showModal ? (
           <Modal close={this.handleCloseModal}>
             <CreateEditSubTask
