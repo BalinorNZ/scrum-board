@@ -169,7 +169,11 @@ class Board extends Component<BoardProps, BoardState> {
           ) : (
             <>
               <div>
-                <span className="sprint-title">{this.context.sprint.name}</span>
+                <span className="sprint-title">
+                  <a target="_blank" href={`https://tracplus.atlassian.net/jira/software/projects/${this.context.projectKey}/boards/${this.context.boardId}/backlog`}>
+                    {this.context.sprint.name}
+                  </a>
+                </span>
                 <span className="story-count">
                   {this.context.stories.length} stories
                 </span>
