@@ -5,6 +5,15 @@ select {
   background-color: #eee;
 }
 
+a {
+  outline: none;
+  text-decoration: none;
+  color: rgb(107, 119, 140);
+}
+a:hover {
+  text-decoration: underline;
+}
+
 .status {
   font-weight: 700;
   text-transform: uppercase;
@@ -245,6 +254,12 @@ select {
   padding-right: 3px;
   padding-top: 3px;
   vertical-align: text-top;
+}
+.issuetype.subtask {
+  height: 18px;
+  width: 18px;
+  padding-right: 3px;
+  padding-top: 3px;
 }
 .priority {
   height: 16px;

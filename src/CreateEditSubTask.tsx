@@ -111,7 +111,14 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
       <div className="subtask-modal">
         {this.props.subtask ? (
           <span className="subtask-modal-issue-id">
-            {this.props.subtask.key}
+            <img
+              className="issuetype subtask"
+              alt="priority icon"
+              src={
+                this.props.subtask.fields.issuetype ? this.props.subtask.fields.issuetype.iconUrl : undefined
+              }
+            />
+            <a target="_blank" href={`https://tracplus.atlassian.net/browse/${this.props.subtask.key}`}>{this.props.subtask.key}</a>
           </span>
         ) : (
           ""

@@ -114,7 +114,7 @@ class StoryCard extends React.Component<StoryProps> {
                 story.fields.issuetype ? story.fields.issuetype.iconUrl : undefined
               }
             />
-            {story.key}
+            <a target="_blank" href={`https://tracplus.atlassian.net/browse/${story.key}`}>{story.key}</a>
           </span>
           <img
             className="priority"
