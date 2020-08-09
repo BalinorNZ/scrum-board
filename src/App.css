@@ -315,7 +315,7 @@ a:hover {
 }
 .column-header {
   color: #5e6c84;
-  font-size: 13px;
+  font-size: 13px !important;
   text-transform: uppercase;
   margin: 0;
   padding: 12px;
