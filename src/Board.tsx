@@ -233,8 +233,10 @@ class Board extends Component<BoardProps, BoardState> {
                 <div className="column-header-subtask-headings">
                   <span className="todo">TO DO</span>
                   <span className="in-progress">
-                    <span className="blue">IN PROGRESS</span>/
-                    <span className="red">BLOCKED</span>
+                    <span className="blue">IN PROGRESS</span>
+                  </span>
+                  <span className="pending-review">
+                    <span className="review_yellow">TESTING & REVIEW</span>
                   </span>
                   <span className="done">DONE</span>
                 </div>
@@ -292,16 +294,24 @@ class Board extends Component<BoardProps, BoardState> {
                             />
                           )}
                         </Droppable>
+                        <div className="story-subtask-groups-separator" style={{ backgroundColor: 'inherit' }} />
                         <Droppable droppableId={STATUS.pendingReview}>
                           {(provided, snapshot) => (
-                            <Separator
+                            <StorySubTasks
                               snapshot={snapshot}
                               innerRef={provided.innerRef}
                               placeholder={provided.placeholder}
                               {...provided.droppableProps}
+                              story={story}
+                              status={[STATUS.pendingReview]}
+                              selectedAvatars={this.state.selectedAvatars}
+                              assignees={getAssigneeListFromSubtasks(
+                                this.context.allSubtasks
+                              )}
                             />
                           )}
                         </Droppable>
+                        <div className="story-subtask-groups-separator" style={{ backgroundColor: 'inherit' }} />
                         <Droppable droppableId={STATUS.done}>
                           {(provided, snapshot) => (
                             <StorySubTasks
@@ -310,7 +320,7 @@ class Board extends Component<BoardProps, BoardState> {
                               placeholder={provided.placeholder}
                               {...provided.droppableProps}
                               story={story}
-                              status={[STATUS.done, STATUS.pendingReview]}
+                              status={[STATUS.done]}
                               selectedAvatars={this.state.selectedAvatars}
                               assignees={getAssigneeListFromSubtasks(
                                 this.context.allSubtasks

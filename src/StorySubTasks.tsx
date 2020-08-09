@@ -40,11 +40,13 @@ class StorySubTasks extends Component<StorySubTasksProps> {
       10002: "rgb(223, 225, 230)",
       10003: "rgb(222, 235, 255)",
       10004: "rgb(227, 252, 239)",
-      10046: "rgb(234, 67, 53)"
+      10046: "rgb(246,209,108)"
     };
+    const storySubtasksClassName = "story-subtasks"+(status[0] === STATUS.inProgress || status[0] === STATUS.pendingReview ? " single-column" : "");
+
     return (
       <div
-        className="story-subtasks"
+        className={storySubtasksClassName}
         ref={this.props.innerRef}
         style={{
           backgroundColor: snapshot.isDraggingOver
