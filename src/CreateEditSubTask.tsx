@@ -101,7 +101,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
           <span className="subtask-modal-issue-id">
             <img
               className="issuetype subtask"
-              alt="priority icon"
+              alt="subtask icon"
               src={
                 this.props.subtask.fields.issuetype ? this.props.subtask.fields.issuetype.iconUrl : undefined
               }
@@ -122,7 +122,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
             autoFocus
           />
           {this.props.subtask ? (
-            <p>{this.props.subtask.fields.summary}</p>
+            <p></p>
           ) : (
             ""
           )}
