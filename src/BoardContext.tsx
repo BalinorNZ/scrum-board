@@ -118,7 +118,7 @@ export default BoardContextProvider;
 
 const updateSubtasks = (subtask: SubTask, subtasks: SubTask[]): SubTask[] => {
   const index = subtasks.findIndex(s => s.key === subtask.key);
-  if (index > 0) {
+  if (index !== -1) {
     return [
       ...subtasks.slice(0, index),
       subtask,
