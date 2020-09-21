@@ -160,8 +160,9 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
           ) : (
             ""
           )}
+          <div className={"clearfix"} />
           <input
-            className={"subtask-modal-button background-blue" + (this.props.subtask ? " left" : "")}
+            className={"subtask-modal-button background-blue right"}
             type="submit"
             value="Save"
           />
