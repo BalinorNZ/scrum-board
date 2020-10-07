@@ -67,7 +67,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
             }
           ]
         },
-        issuetype: { id: "10009" },
+        issuetype: { id: this.context.allSubtasks[0].fields.issuetype.id },
         assignee: { id: this.state.selectedAvatar }
       };
       fetcher(`issue`,"post",{ "Content-Type": "application/json" }, JSON.stringify(body))
@@ -94,7 +94,6 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
     console.log("Are you sure you want to delete this subtask?" + this.props.subtask.fields.summary);
   };
   render() {
-    console.log(this.props.subtask);
     return (
       <div className="subtask-modal">
         {this.props.subtask ? (

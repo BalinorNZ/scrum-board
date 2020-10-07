@@ -67,7 +67,7 @@ class Board extends Component<BoardProps, BoardState> {
     allSubtasks[index].fields.status = { ...allSubtasks[index].fields.status, ...newStatus };
 
     fetcher(
-      `issue/${newStatus.id}/transitions`,
+      `issue/${allSubtasks[index].id}/transitions`,
       "post",
       { "Content-Type": "application/json" },
       JSON.stringify({ transition: { id: this.context.getTransitionId(destination.droppableId) } }),
