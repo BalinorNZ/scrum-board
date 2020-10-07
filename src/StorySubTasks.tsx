@@ -1,8 +1,9 @@
-import { STATUS, Story, SubTask } from "./JiraInterfaces";
+import { Story, SubTask } from "./JiraInterfaces";
 import React, { Component } from "react";
 import sortBy from "lodash.sortby";
 import { Draggable } from "react-beautiful-dnd";
 import StorySubTask from "./StorySubTask";
+import { BoardContext } from "./BoardContext";
 
 interface StorySubTasksProps {
   story: Story;
@@ -14,6 +15,8 @@ interface StorySubTasksProps {
   assignees: any;
 }
 class StorySubTasks extends Component<StorySubTasksProps> {
+  static contextType = BoardContext;
+
   render() {
     const {
       snapshot,
@@ -29,7 +32,7 @@ class StorySubTasks extends Component<StorySubTasksProps> {
             status.find(status => status === subtask.fields.status.id)
           )
         : [];
-    if (status.some(s => s === STATUS.done || s === STATUS.closed))
+    if (status.some(s => s === this.context.getStatusId('Done') || s === this.context.getStatusId('Closed')))
       subtasks = sortBy(
         subtasks,
         subtask => new Date(subtask.fields.resolutiondate)
@@ -42,7 +45,7 @@ class StorySubTasks extends Component<StorySubTasksProps> {
       10004: "rgb(227, 252, 239)",
       10046: "rgb(246,209,108)"
     };
-    const storySubtasksClassName = "story-subtasks"+(status[0] === STATUS.inProgress || status[0] === STATUS.pendingReview ? " single-column" : "");
+    const storySubtasksClassName = "story-subtasks"+(status[0] === this.context.getStatusId('In Progress') || status[0] === this.context.getStatusId('Pending Review') ? " single-column" : "");
 
     return (
       <div

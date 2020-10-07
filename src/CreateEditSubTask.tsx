@@ -106,7 +106,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
                 this.props.subtask.fields.issuetype ? this.props.subtask.fields.issuetype.iconUrl : undefined
               }
             />
-            <a target="_blank" href={`https://tracplus.atlassian.net/browse/${this.props.subtask.key}`}>{this.props.subtask.key}</a>
+            <a target="_blank" rel="noopener noreferrer" href={`https://tracplus.atlassian.net/browse/${this.props.subtask.key}`}>{this.props.subtask.key}</a>
           </span>
         ) : (
           ""

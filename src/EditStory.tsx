@@ -16,7 +16,7 @@ const EditStory = (props: EditStoryProps) => {
             story.fields.issuetype ? story.fields.issuetype.iconUrl : undefined
           }
         />
-        <a target="_blank" href={`https://tracplus.atlassian.net/browse/${story.key}`}>{story.key}</a>
+        <a target="_blank" rel="noopener noreferrer" href={`https://tracplus.atlassian.net/browse/${story.key}`}>{story.key}</a>
       </span>
       <h1>{story.fields.summary}</h1>
       <p className="subtask-modal-description">{story.fields.description}</p>
