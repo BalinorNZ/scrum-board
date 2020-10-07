@@ -40,10 +40,10 @@ class StorySubTasks extends Component<StorySubTasksProps> {
         .reverse()
         .slice(0, 4);
     const STATUS_COLOR: any = {
-      10002: "rgb(223, 225, 230)",
-      10003: "rgb(222, 235, 255)",
-      10004: "rgb(227, 252, 239)",
-      10046: "rgb(246,209,108)"
+      [this.context.getStatusId('To Do')]: "rgb(223, 225, 230)",
+      [this.context.getStatusId('In Progress')]: "rgb(222, 235, 255)",
+      [this.context.getStatusId('Done')]: "rgb(227, 252, 239)",
+      [this.context.getStatusId('Pending Review')]: "rgb(246,209,108)"
     };
     const storySubtasksClassName = "story-subtasks"+(status[0] === this.context.getStatusId('In Progress') || status[0] === this.context.getStatusId('Pending Review') ? " single-column" : "");
 

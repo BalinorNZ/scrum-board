@@ -20,6 +20,7 @@ type BoardContextState = {
   saveSubtask: (subtask: SubTask, storyId: number) => void;
   selectEpic: (epic: Epic | undefined) => void;
   getStatusId: (name: string) => void;
+  getStatusById: (statusId: string) => void;
   getTransitionId: (statusId: string) => void;
   slugify: (string: string) => void;
 };
@@ -41,6 +42,7 @@ const defaultBoardContext: BoardContextState = {
   saveSubtask: (subtask: SubTask, storyId: number) => {},
   selectEpic: (epic: Epic | undefined) => {},
   getStatusId: (name: string) => {},
+  getStatusById: (statusId: string) => {},
   getTransitionId: (statusId: string) => {},
   slugify: (string: string) => {},
   // selectedAvatars: []
@@ -116,6 +118,10 @@ class BoardContextProvider extends React.Component<{}, BoardContextState> {
       this.state.statuses.find((s: Status) => s.name === name);
     return status ? status['id'] : '';
   }
+  public getStatusById = (statusId: string) => {
+    return this.state.statuses &&
+      this.state.statuses.find((s: Status) => s.id === statusId);
+  }
   public getTransitionId = (statusId: string) => {
     const status = this.state.statuses &&
       this.state.statuses.find((s: Status) => s.id  === statusId);
@@ -152,6 +158,7 @@ class BoardContextProvider extends React.Component<{}, BoardContextState> {
           saveSubtask: this.saveSubtask,
           selectEpic: this.selectEpic,
           getStatusId: this.getStatusId,
+          getStatusById: this.getStatusById,
           getTransitionId: this.getTransitionId,
           slugify: this.slugify,
         }}
@@ -163,6 +170,7 @@ class BoardContextProvider extends React.Component<{}, BoardContextState> {
 }
 export default BoardContextProvider;
 
+// TODO: memoize subtasks and don't replace the whole subtask array for an individual subtask update
 const updateSubtasks = (subtask: SubTask, subtasks: SubTask[]): SubTask[] => {
   const index = subtasks.findIndex(s => s.key === subtask.key);
   if (index !== -1) {

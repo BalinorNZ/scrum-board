@@ -63,10 +63,11 @@ class Board extends Component<BoardProps, BoardState> {
       return;
     let allSubtasks = this.context.allSubtasks;
     let index = allSubtasks.findIndex((s: SubTask) => s.id === draggableId);
-    allSubtasks[index].fields.status.id = destination.droppableId;
+    const newStatus = this.context.getStatusById(destination.droppableId);
+    allSubtasks[index].fields.status = { ...allSubtasks[index].fields.status, ...newStatus };
 
     fetcher(
-      `issue/${allSubtasks[index].id}/transitions`,
+      `issue/${newStatus.id}/transitions`,
       "post",
       { "Content-Type": "application/json" },
       JSON.stringify({ transition: { id: this.context.getTransitionId(destination.droppableId) } }),
