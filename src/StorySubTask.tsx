@@ -9,6 +9,7 @@ import Modal from "./Modal";
 import CreateEditSubTask from "./CreateEditSubTask";
 import {getAvatar} from "./Utils";
 import UnassignedAvatar from "./UnassignedAvatar";
+import { BoardContext } from "./BoardContext";
 
 interface StorySubTaskProps {
   subtask: SubTask;
@@ -20,6 +21,8 @@ interface StorySubTaskProps {
   assignees: any;
 }
 class StorySubTask extends Component<StorySubTaskProps> {
+  static contextType = BoardContext;
+
   state = { showModal: false };
   handleSubTaskClick = () => this.setState({ showModal: true });
   handleCloseModal = () => this.setState({ showModal: false });
@@ -42,7 +45,7 @@ class StorySubTask extends Component<StorySubTaskProps> {
       >
         <div
           className={
-            "subtask-card-status status-id-" + subtask.fields.status.id
+            "subtask-card-status status-id-" + this.context.slugify(subtask.fields.status.name)
           }
         />
         <p onClick={this.handleSubTaskClick}>{subtask.fields.summary}</p>

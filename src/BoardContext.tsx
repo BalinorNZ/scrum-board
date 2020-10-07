@@ -1,10 +1,12 @@
 import * as React from "react";
-import { Epic, Sprint, Story, SubTask } from "./JiraInterfaces";
+import { Epic, Sprint, Story, SubTask, Status } from "./JiraInterfaces";
 import fetcher from "./ApiURL";
 
 type BoardContextState = {
   projectKey: string;
   boardId: number;
+  statuses: Status[];
+  transitions: any[];
   sprint: Sprint;
   stories: Story[];
   allSubtasks: SubTask[];
@@ -17,10 +19,16 @@ type BoardContextState = {
   updateStories: (stories: Story[]) => void;
   saveSubtask: (subtask: SubTask, storyId: number) => void;
   selectEpic: (epic: Epic | undefined) => void;
+  getStatusId: (name: string) => void;
+  getStatusById: (statusId: string) => void;
+  getTransitionId: (statusId: string) => void;
+  slugify: (string: string) => void;
 };
 const defaultBoardContext: BoardContextState = {
   projectKey: "",
   boardId: 0,
+  statuses: [],
+  transitions: [],
   sprint: {} as Sprint,
   stories: [] as Story[],
   allSubtasks: [] as SubTask[],
@@ -32,7 +40,11 @@ const defaultBoardContext: BoardContextState = {
   updateSubtasks: (subtasks: SubTask[]) => {},
   updateStories: (stories: Story[]) => {},
   saveSubtask: (subtask: SubTask, storyId: number) => {},
-  selectEpic: (epic: Epic | undefined) => {}
+  selectEpic: (epic: Epic | undefined) => {},
+  getStatusId: (name: string) => {},
+  getStatusById: (statusId: string) => {},
+  getTransitionId: (statusId: string) => {},
+  slugify: (string: string) => {},
   // selectedAvatars: []
 };
 
@@ -45,6 +57,7 @@ class BoardContextProvider extends React.Component<{}, BoardContextState> {
 
   async componentDidUpdate(prevProps: {}, prevState: BoardContextState) {
     if (prevState.boardId === this.state.boardId) return;
+    const boardConfig = await fetchBoardConfig(this.state.boardId);
     const sprint = await fetchSprint(this.state.boardId);
     const stories = await fetchStories(this.state.boardId);
     const allSubtasks =
@@ -53,10 +66,16 @@ class BoardContextProvider extends React.Component<{}, BoardContextState> {
         (acc: SubTask[], cur: Story) => acc.concat(cur.fields.subtasks),
         []
       );
+    const statuses: Status[] = boardConfig.columnConfig.columns.map((column: any) =>
+      ({ name: column.name, id: column.statuses[0].id, self: column.statuses[0].self, iconUrl: '' })
+    );
+    const transitions = await fetchTransitions(stories[0].id);
     this.setState({
       projectKey: this.state.projectKey,
       boardId: this.state.boardId,
       isFetching: false,
+      statuses,
+      transitions,
       sprint,
       stories,
       allSubtasks
@@ -94,6 +113,37 @@ class BoardContextProvider extends React.Component<{}, BoardContextState> {
     console.log(epic);
     this.setState({ selectedEpic: epic });
   };
+  public getStatusId = (name: string) => {
+    const status = this.state.statuses &&
+      this.state.statuses.find((s: Status) => s.name === name);
+    return status ? status['id'] : '';
+  }
+  public getStatusById = (statusId: string) => {
+    return this.state.statuses &&
+      this.state.statuses.find((s: Status) => s.id === statusId);
+  }
+  public getTransitionId = (statusId: string) => {
+    const status = this.state.statuses &&
+      this.state.statuses.find((s: Status) => s.id  === statusId);
+    const transition = status && this.state.transitions &&
+      this.state.transitions.find((t: any) => t.name === status.name);
+    return transition ? transition['id'] : '';
+  }
+  public slugify = (string: string) => {
+    const a = "àáäâãåèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;";
+    const b = "aaaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------";
+    const p = new RegExp(a.split("").join("|"), "g");
+    return string
+      .toString()
+      .toLowerCase()
+      .replace(/\s+/g, "-") // Replace spaces with
+      .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
+      .replace(/&/g, "-and-") // Replace & with ‘and’
+      .replace(/[^\w-]+/g, "") // Remove all non-word characters
+      .replace(/--+/g, "-") // Replace multiple — with single -
+      .replace(/^-+/, "") // Trim — from start of text
+      .replace(/-+$/, ""); // Trim — from end of text
+  }
 
   render() {
     return (
@@ -106,7 +156,11 @@ class BoardContextProvider extends React.Component<{}, BoardContextState> {
           updateSubtasks: this.updateSubtasks,
           updateStories: this.updateStories,
           saveSubtask: this.saveSubtask,
-          selectEpic: this.selectEpic
+          selectEpic: this.selectEpic,
+          getStatusId: this.getStatusId,
+          getStatusById: this.getStatusById,
+          getTransitionId: this.getTransitionId,
+          slugify: this.slugify,
         }}
       >
         {this.props.children}
@@ -116,6 +170,7 @@ class BoardContextProvider extends React.Component<{}, BoardContextState> {
 }
 export default BoardContextProvider;
 
+// TODO: memoize subtasks and don't replace the whole subtask array for an individual subtask update
 const updateSubtasks = (subtask: SubTask, subtasks: SubTask[]): SubTask[] => {
   const index = subtasks.findIndex(s => s.key === subtask.key);
   if (index !== -1) {
@@ -137,4 +192,14 @@ const fetchStories = async (boardId: number) => {
   return fetcher(`board/${boardId}`,"get")
     .then(res => res.json())
     .then(({ stories }) => stories);
+};
+const fetchBoardConfig = async (boardId: number) => {
+  return fetcher(`board/${boardId}/configuration`,"get")
+    .then(res => res.json())
+    .then(({ boardConfig }) => boardConfig);
+};
+const fetchTransitions = async (issueId: number) => {
+  return fetcher(`issue/${issueId}/transitions`,"get")
+    .then(res => res.json())
+    .then(({ transitions }) => transitions);
 };

@@ -418,16 +418,16 @@ a:hover {
 .subtask-card-status {
   width: 4px;
 }
-.subtask-card-status.status-id-10003 {
+.subtask-card-status.status-id-in-progress {
   background-color: rgb(66, 133, 244);
 }
-.subtask-card-status.status-id-10004 {
+.subtask-card-status.status-id-done {
   background-color: rgb(52, 168, 83);
 }
-.subtask-card-status.status-id-10002 {
+.subtask-card-status.status-id-to-do {
   background-color: #ccc;
 }
-.subtask-card-status.status-id-10046 {
+.subtask-card-status.status-id-pending-review {
   background-color: rgb(255, 199, 31);
 }
 .subtask-card.dim {

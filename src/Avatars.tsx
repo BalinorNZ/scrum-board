@@ -1,4 +1,4 @@
-import { STATUS, SubTask } from "./JiraInterfaces";
+import { SubTask } from "./JiraInterfaces";
 import groupBy from "lodash.groupby";
 import { getAvatar } from "./Utils";
 import UnassignedAvatar from "./UnassignedAvatar";
@@ -74,7 +74,7 @@ export default Avatars;
 
 function notDone(subtask: SubTask) {
   return (
-    subtask.fields.status.id !== STATUS.done &&
-    subtask.fields.status.id !== STATUS.closed
-  );
+    subtask.fields.status.name !== 'Done' &&
+    subtask.fields.status.name !== 'Closed'
+  )
 }
