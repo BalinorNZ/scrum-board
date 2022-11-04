@@ -1,12 +1,3 @@
-export const STATUS = {
-  todo: "10002",
-  inProgress: "10003",
-  done: "10004",
-  blocked: "10909",
-  closed: "11111",
-  pendingReview: "10046",
-};
-
 export interface SprintList {
   maxResults: number;
   startAt: number;
@@ -127,7 +118,7 @@ export interface Actor {
   timeZone: string;
 }
 
-interface Status {
+export interface Status {
   id: string;
   iconUrl: string;
   name: string;

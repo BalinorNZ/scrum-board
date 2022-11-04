@@ -1,9 +1,11 @@
-import { STATUS, Story, SubTask } from "./JiraInterfaces";
+import { Story, SubTask } from "./JiraInterfaces";
 import React from "react";
 import Avatars from "./Avatars";
 import Modal from "./Modal";
 import CreateEditSubTask from "./CreateEditSubTask";
 import EditStory from "./EditStory";
+import {getAvatar} from "./Utils";
+import { BoardContext } from "./BoardContext";
 
 interface StoryCardState {
   activeMenu: boolean;
@@ -17,6 +19,8 @@ interface StoryProps {
   assignees: any;
 }
 class StoryCard extends React.Component<StoryProps> {
+  static contextType = BoardContext;
+
   state: Readonly<StoryCardState> = {
     activeMenu: false,
     showCreateSubtaskModal: false,
@@ -38,7 +42,9 @@ class StoryCard extends React.Component<StoryProps> {
   };
   isBlocked = () => {
     return this.props.story.fields.subtasks.filter(
-      (subtask: SubTask) => subtask.fields.status.id === STATUS.blocked
+      (subtask: SubTask) =>
+        subtask.fields.status.id === this.context.getStatusId('Blocked')
+      || subtask.fields.status.id === this.context.getStatusId('Blocked (external)')
     ).length;
   };
   openCreateSubtaskModal = () =>
@@ -61,17 +67,17 @@ class StoryCard extends React.Component<StoryProps> {
           ...
         </div>
         <ul className={"story-menu" + (this.state.activeMenu ? " open" : "")}>
-          <li onClick={() => this.props.transitionStory(STATUS.todo, story.id)}>
+          <li onClick={() => this.props.transitionStory(this.context.getStatusId('To Do'), story.id)}>
             To-do
           </li>
           <li
             onClick={() =>
-              this.props.transitionStory(STATUS.inProgress, story.id)
+              this.props.transitionStory(this.context.getStatusId('In Progress'), story.id)
             }
           >
             In Progress
           </li>
-          <li onClick={() => this.props.transitionStory(STATUS.done, story.id)}>
+          <li onClick={() => this.props.transitionStory(this.context.getStatusId('Done'), story.id)}>
             Done
           </li>
           <li onClick={() => this.openCreateSubtaskModal()}>Create Subtask</li>
@@ -100,7 +106,7 @@ class StoryCard extends React.Component<StoryProps> {
               className="avatar"
               src={
                 story.fields.assignee &&
-                story.fields.assignee.avatarUrls["48x48"]
+                getAvatar(story.fields.assignee)
               }
             />
           )}
@@ -114,7 +120,7 @@ class StoryCard extends React.Component<StoryProps> {
                 story.fields.issuetype ? story.fields.issuetype.iconUrl : undefined
               }
             />
-            {story.key}
+            <a target="_blank" rel="noopener noreferrer" href={`https://tracplus.atlassian.net/browse/${story.key}`}>{story.key}</a>
           </span>
           <img
             className="priority"

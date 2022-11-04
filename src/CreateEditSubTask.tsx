@@ -1,7 +1,9 @@
 import React from "react";
 import { Actor, Story, SubTask } from "./JiraInterfaces";
-import APIURL from "./ApiURL";
+import fetcher from "./ApiURL";
 import { BoardContext } from "./BoardContext";
+import {getAvatar} from "./Utils";
+import UnassignedAvatar from "./UnassignedAvatar";
 
 interface CreateSubTaskState {
   subtaskSummary: string;
@@ -39,13 +41,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
         summary: this.state.subtaskSummary,
         assignee: { id: this.state.selectedAvatar }
       };
-      fetch(`${APIURL}/issue/${this.props.subtask.key}`, {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      })
+      fetcher(`issue/${this.props.subtask.key}`,"post",{ "Content-Type": "application/json" }, JSON.stringify(body))
         .then(res => res.json())
         .then(result => {
           if (result === 204) {
@@ -71,16 +67,10 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
             }
           ]
         },
-        issuetype: { id: "10009" },
+        issuetype: { id: this.context.allSubtasks[0].fields.issuetype.id },
         assignee: { id: this.state.selectedAvatar }
       };
-      fetch(`${APIURL}/issue`, {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      })
+      fetcher(`issue`,"post",{ "Content-Type": "application/json" }, JSON.stringify(body))
         .then(res => res.json())
         .then(result => {
           this.updateSubtaskOnBoard(result.id);
@@ -90,9 +80,7 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
   // TODO: could refactor this code into saveSubtask() in board context
   updateSubtaskOnBoard = (subtaskId: string) => {
     // fetch the issue we just created and add it to the board
-    fetch(`${APIURL}/issue/${subtaskId}`, {
-      method: "get"
-    })
+    fetcher(`issue/${subtaskId}`,"get")
       .then(res => res.json())
       .then(issue => {
         this.context.saveSubtask(issue, this.props.story.id);
@@ -106,12 +94,18 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
     console.log("Are you sure you want to delete this subtask?" + this.props.subtask.fields.summary);
   };
   render() {
-    console.log(this.props.subtask);
     return (
       <div className="subtask-modal">
         {this.props.subtask ? (
           <span className="subtask-modal-issue-id">
-            {this.props.subtask.key}
+            <img
+              className="issuetype subtask"
+              alt="subtask icon"
+              src={
+                this.props.subtask.fields.issuetype ? this.props.subtask.fields.issuetype.iconUrl : undefined
+              }
+            />
+            <a target="_blank" rel="noopener noreferrer" href={`https://tracplus.atlassian.net/browse/${this.props.subtask.key}`}>{this.props.subtask.key}</a>
           </span>
         ) : (
           ""
@@ -127,31 +121,35 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
             autoFocus
           />
           {this.props.subtask ? (
-            <p>{this.props.subtask.fields.summary}</p>
+            <p></p>
           ) : (
             ""
           )}
           <h2 className="subtask-modal-status-title">Assignee</h2>
-          {this.props.assignees.map((assignee: Actor, index: number) => (
-            <div
-              key={index}
-              className={
-                this.state.selectedAvatar &&
-                this.state.selectedAvatar === assignee.accountId
-                  ? "avatar-with-count selected"
-                  : "avatar-with-count"
-              }
-              onClick={e => this.selectAvatar(e, assignee)}
-            >
-              <img
-                title={assignee.displayName}
+          {this.props.assignees.map((assignee: Actor, index: number) => {
+            return !getAvatar(assignee) ? (
+              <UnassignedAvatar large />
+            ) : (
+              <div
                 key={index}
-                alt="assignee avatar"
-                className="avatar"
-                src={assignee.avatarUrls["48x48"]}
-              />
-            </div>
-          ))}
+                className={
+                  this.state.selectedAvatar &&
+                  this.state.selectedAvatar === assignee.accountId
+                    ? "avatar-with-count selected"
+                    : "avatar-with-count"
+                }
+                onClick={e => this.selectAvatar(e, assignee)}
+              >
+                <img
+                  title={assignee.displayName}
+                  key={index}
+                  alt="assignee avatar"
+                  className="avatar"
+                  src={getAvatar(assignee)}
+                />
+              </div>
+            )
+            })}
           {/* TODO: add 'status' toggle thing here */}
           {this.props.subtask ? (
             <>
@@ -161,8 +159,9 @@ class CreateSubTask extends React.Component<CreateSubTaskProps> {
           ) : (
             ""
           )}
+          <div className={"clearfix"} />
           <input
-            className={"subtask-modal-button background-blue" + (this.props.subtask ? " left" : "")}
+            className={"subtask-modal-button background-blue right"}
             type="submit"
             value="Save"
           />

@@ -1,27 +1,18 @@
 import React, { Component } from "react";
-import APIURL from "./ApiURL";
+import fetcher from "./ApiURL";
 import { RouteComponentProps } from "react-router";
-import { STATUS, Story, SubTask } from "./JiraInterfaces";
+import { Story, SubTask } from "./JiraInterfaces";
 import Spinner from "./Spinner";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import StorySubTasks from "./StorySubTasks";
 import StoryCard from "./StoryCard";
 import Avatars from "./Avatars";
 import Ellipsis from "./Ellipsis";
-import Separator from "./Separator";
+// import Separator from "./Separator";
 import groupBy from "lodash.groupby";
 import { BoardContext } from "./BoardContext";
 import EpicFilter from "./EpicFilter";
-
-// TODO: refactor all the hardcoded IDs everywhere into a global const (status IDs and transition IDs etc)
-const TRANSITIONS: any = {
-  [STATUS.todo]: "11",
-  [STATUS.inProgress]: "21",
-  [STATUS.done]: "31",
-  [STATUS.pendingReview]: "41",
-  [STATUS.blocked]: "71",
-  [STATUS.closed]: "11111",
-};
+import {getAvatar} from "./Utils";
 
 interface BoardState {
   selectedAvatars: string[];
@@ -72,19 +63,15 @@ class Board extends Component<BoardProps, BoardState> {
       return;
     let allSubtasks = this.context.allSubtasks;
     let index = allSubtasks.findIndex((s: SubTask) => s.id === draggableId);
-    allSubtasks[index].fields.status.id = destination.droppableId;
+    const newStatus = this.context.getStatusById(destination.droppableId);
+    allSubtasks[index].fields.status = { ...allSubtasks[index].fields.status, ...newStatus };
 
-    fetch(`${APIURL}/issue/${allSubtasks[index].id}/transitions`, {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        transition: { id: TRANSITIONS[destination.droppableId] }
-      })
-    })
-      .then(res => res.json())
-      .then(
+    fetcher(
+      `issue/${allSubtasks[index].id}/transitions`,
+      "post",
+      { "Content-Type": "application/json" },
+      JSON.stringify({ transition: { id: this.context.getTransitionId(destination.droppableId) } }),
+    ).then(res => res.json()).then(
         status =>
           status.result === 204 && this.context.updateSubtasks(allSubtasks)
       );
@@ -94,15 +81,12 @@ class Board extends Component<BoardProps, BoardState> {
     let index = stories.findIndex((s: Story) => s.id === storyId);
     stories[index].fields.status.id = statusId;
 
-    fetch(`${APIURL}/issue/${stories[index].id}/transitions`, {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        transition: { id: TRANSITIONS[statusId] }
-      })
-    })
+    fetcher(
+      `issue/${stories[index].id}/transitions`,
+      "post",
+      { "Content-Type": "application/json" },
+      JSON.stringify({ transition: { id: this.context.getTransitionId(statusId) } }),
+    )
       .then(res => res.json())
       .then(
         status => status.result === 204 && this.context.updateStories(stories)
@@ -113,15 +97,16 @@ class Board extends Component<BoardProps, BoardState> {
       this.context.stories.find((story: Story) => story.id === id) ||
       ({} as Story);
     return story.fields.subtasks.filter(
-      (subtask: SubTask) => subtask.fields.status.id === STATUS.blocked
+      (subtask: SubTask) => subtask.fields.status.id === this.context.getStatusId('Blocked')
+      || subtask.fields.status.id === this.context.getStatusId('Blocked (external)')
     ).length;
   };
   isPendingReview = (id: string) => {
     const story: Story =
       this.context.stories.find((story: Story) => story.id === id) ||
       ({} as Story);
-    return story.fields.status.id === STATUS.pendingReview || story.fields.subtasks.filter(
-      (subtask: SubTask) => subtask.fields.status.id === STATUS.pendingReview
+    return story.fields.status.id === this.context.getStatusId('Pending Review') || story.fields.subtasks.filter(
+      (subtask: SubTask) => subtask.fields.status.id === this.context.getStatusId('Pending Review')
     ).length;
   };
   handleCollapse = () => {
@@ -157,16 +142,17 @@ class Board extends Component<BoardProps, BoardState> {
       : storiesFilteredByEpic;
     const inProgress = storiesFilteredByAssignees.filter(
       (story: Story) =>
-        story.fields.status.id === STATUS.inProgress ||
-        story.fields.status.id === STATUS.blocked ||
-        story.fields.status.id === STATUS.pendingReview
+        story.fields.status.id === this.context.getStatusId('In Progress') ||
+        story.fields.status.id === this.context.getStatusId('Blocked') ||
+        story.fields.status.id === this.context.getStatusId('Blocked (external)') ||
+        story.fields.status.id === this.context.getStatusId('Pending Review')
     );
     const toDo = storiesFilteredByAssignees.filter(
-      (story: Story) => story.fields.status.id === STATUS.todo
+      (story: Story) => story.fields.status.id === this.context.getStatusId('To Do')
     );
     const done = storiesFilteredByAssignees.filter(
       (story: Story) =>
-        story.fields.status.id === STATUS.done
+        story.fields.status.id === this.context.getStatusId('Done')
     );
     return (
       <div className="board">
@@ -176,7 +162,11 @@ class Board extends Component<BoardProps, BoardState> {
           ) : (
             <>
               <div>
-                <span className="sprint-title">{this.context.sprint.name}</span>
+                <span className="sprint-title">
+                  <a target="_blank" rel="noopener noreferrer" href={`https://tracplus.atlassian.net/jira/software/projects/${this.context.projectKey}/boards/${this.context.boardId}/backlog`}>
+                    {this.context.sprint.name}
+                  </a>
+                </span>
                 <span className="story-count">
                   {this.context.stories.length} stories
                 </span>
@@ -236,8 +226,10 @@ class Board extends Component<BoardProps, BoardState> {
                 <div className="column-header-subtask-headings">
                   <span className="todo">TO DO</span>
                   <span className="in-progress">
-                    <span className="blue">IN PROGRESS</span>/
-                    <span className="red">BLOCKED</span>
+                    <span className="blue">IN PROGRESS</span>
+                  </span>
+                  <span className="pending-review">
+                    <span className="review_yellow">TESTING & REVIEW</span>
                   </span>
                   <span className="done">DONE</span>
                 </div>
@@ -262,7 +254,7 @@ class Board extends Component<BoardProps, BoardState> {
                     />
                     <DragDropContext onDragEnd={this.onDragEnd}>
                       <div className="story-subtask-groups">
-                        <Droppable droppableId={STATUS.todo}>
+                        <Droppable droppableId={this.context.getStatusId('To Do')}>
                           {(provided, snapshot) => (
                             <StorySubTasks
                               snapshot={snapshot}
@@ -270,7 +262,7 @@ class Board extends Component<BoardProps, BoardState> {
                               placeholder={provided.placeholder}
                               {...provided.droppableProps}
                               story={story}
-                              status={[STATUS.todo]}
+                              status={[this.context.getStatusId('To Do')]}
                               selectedAvatars={this.state.selectedAvatars}
                               assignees={getAssigneeListFromSubtasks(
                                 this.context.allSubtasks
@@ -279,7 +271,7 @@ class Board extends Component<BoardProps, BoardState> {
                           )}
                         </Droppable>
                         <div className="story-subtask-groups-separator" style={{ backgroundColor: 'inherit' }} />
-                        <Droppable droppableId={STATUS.inProgress}>
+                        <Droppable droppableId={this.context.getStatusId('In Progress')}>
                           {(provided, snapshot) => (
                             <StorySubTasks
                               snapshot={snapshot}
@@ -287,7 +279,7 @@ class Board extends Component<BoardProps, BoardState> {
                               placeholder={provided.placeholder}
                               {...provided.droppableProps}
                               story={story}
-                              status={[STATUS.inProgress, STATUS.blocked]}
+                              status={[this.context.getStatusId('In Progress'), this.context.getStatusId('Blocked'), this.context.getStatusId('Blocked (external)')]}
                               selectedAvatars={this.state.selectedAvatars}
                               assignees={getAssigneeListFromSubtasks(
                                 this.context.allSubtasks
@@ -295,17 +287,8 @@ class Board extends Component<BoardProps, BoardState> {
                             />
                           )}
                         </Droppable>
-                        <Droppable droppableId={STATUS.pendingReview}>
-                          {(provided, snapshot) => (
-                            <Separator
-                              snapshot={snapshot}
-                              innerRef={provided.innerRef}
-                              placeholder={provided.placeholder}
-                              {...provided.droppableProps}
-                            />
-                          )}
-                        </Droppable>
-                        <Droppable droppableId={STATUS.done}>
+                        <div className="story-subtask-groups-separator" style={{ backgroundColor: 'inherit' }} />
+                        <Droppable droppableId={this.context.getStatusId('Pending Review')}>
                           {(provided, snapshot) => (
                             <StorySubTasks
                               snapshot={snapshot}
@@ -313,7 +296,24 @@ class Board extends Component<BoardProps, BoardState> {
                               placeholder={provided.placeholder}
                               {...provided.droppableProps}
                               story={story}
-                              status={[STATUS.done, STATUS.pendingReview]}
+                              status={[this.context.getStatusId('Pending Review')]}
+                              selectedAvatars={this.state.selectedAvatars}
+                              assignees={getAssigneeListFromSubtasks(
+                                this.context.allSubtasks
+                              )}
+                            />
+                          )}
+                        </Droppable>
+                        <div className="story-subtask-groups-separator" style={{ backgroundColor: 'inherit' }} />
+                        <Droppable droppableId={this.context.getStatusId('Done')}>
+                          {(provided, snapshot) => (
+                            <StorySubTasks
+                              snapshot={snapshot}
+                              innerRef={provided.innerRef}
+                              placeholder={provided.placeholder}
+                              {...provided.droppableProps}
+                              story={story}
+                              status={[this.context.getStatusId('Done')]}
                               selectedAvatars={this.state.selectedAvatars}
                               assignees={getAssigneeListFromSubtasks(
                                 this.context.allSubtasks
@@ -358,7 +358,7 @@ function getAssigneeListFromSubtasks(subtasks: SubTask[]) {
   const groupedSubtasks = groupBy(
     subtasks,
     (subtask: SubTask) =>
-      subtask.fields.assignee && subtask.fields.assignee.avatarUrls["48x48"]
+      subtask.fields.assignee && getAvatar(subtask.fields.assignee)
   );
   return Object.keys(groupedSubtasks).map(
     (key: any) => groupedSubtasks[key][0].fields.assignee || { displayName: "" }
@@ -383,19 +383,3 @@ function formatDate(ISOdate: Date | undefined) {
     hour12: true
   })}`;
 }
-
-// function slugify(string: string) {
-//   const a = "àáäâãåèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;";
-//   const b = "aaaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------";
-//   const p = new RegExp(a.split("").join("|"), "g");
-//   return string
-//     .toString()
-//     .toLowerCase()
-//     .replace(/\s+/g, "-") // Replace spaces with
-//     .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
-//     .replace(/&/g, "-and-") // Replace & with ‘and’
-//     .replace(/[^\w-]+/g, "") // Remove all non-word characters
-//     .replace(/--+/g, "-") // Replace multiple — with single -
-//     .replace(/^-+/, "") // Trim — from start of text
-//     .replace(/-+$/, ""); // Trim — from end of text
-// }

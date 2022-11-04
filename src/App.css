@@ -5,6 +5,15 @@ select {
   background-color: #eee;
 }
 
+a {
+  outline: none;
+  text-decoration: none;
+  color: rgb(107, 119, 140);
+}
+a:hover {
+  text-decoration: underline;
+}
+
 .status {
   font-weight: 700;
   text-transform: uppercase;
@@ -50,8 +59,8 @@ select {
   display: inline-block;
   background-color: transparent;
   border-radius: 50%;
-  height: 32px;
-  width: 32px;
+  height: 38px;
+  width: 38px;
   -webkit-box-align: stretch;
   align-items: stretch;
   box-sizing: content-box;
@@ -62,6 +71,15 @@ select {
   outline: none;
   overflow: hidden;
   transition: background-color 0s ease-out 0s;
+  padding: 2px;
+}
+.avatar-unassigned.large-avatar {
+  height: 48px;
+  width: 48px;
+}
+.avatar-unassigned.small-avatar {
+  height: 24px;
+  width: 24px;
 }
 .avatar-unassigned circle {
   fill: rgb(193, 199, 208);
@@ -122,8 +140,8 @@ select {
   padding: 10px;
   position: relative;
   transition: background-color 140ms ease-in-out, border-color 75ms ease-in-out;
-  max-width: 250px;
-  width: 250px;
+  max-width: 230px;
+  width: 230px;
   box-shadow: 0px 1px 2px 0px rgba(9, 30, 66, 0.25);
   display: grid;
   grid-template-rows: auto auto 25px;
@@ -136,7 +154,7 @@ select {
   height: 36px;
 }
 .story-summary-section {
-  max-width: 250px;
+  max-width: 230px;
 }
 .summary {
   display: block;
@@ -246,6 +264,12 @@ select {
   padding-top: 3px;
   vertical-align: text-top;
 }
+.issuetype.subtask {
+  height: 18px;
+  width: 18px;
+  padding-right: 3px;
+  padding-top: 3px;
+}
 .priority {
   height: 16px;
   width: 16px;
@@ -268,12 +292,12 @@ select {
 
 .columns {
   display: grid;
-  grid-template-columns: 288px auto 288px;
+  grid-template-columns: 268px auto 268px;
   grid-column-gap: 10px;
   padding: 0 20px;
 }
 .hide-todo.columns {
-  grid-template-columns: 64px auto 288px;
+  grid-template-columns: 64px auto 268px;
 }
 .hide-todo .todo-column {
   max-width: 64px;
@@ -284,14 +308,14 @@ select {
 .done-column {
   list-style: none;
   background: #f4f5f7;
-  max-width: 288px;
+  max-width: 268px;
 }
 .inprogress-column {
   max-width: 100%;
 }
 .column-header {
   color: #5e6c84;
-  font-size: 13px;
+  font-size: 13px !important;
   text-transform: uppercase;
   margin: 0;
   padding: 12px;
@@ -303,7 +327,7 @@ select {
 }
 .column-header-subtask-headings {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 0.5fr 0.5fr 1fr;
   grid-gap: 28px;
   margin-right: 3px;
 }
@@ -334,7 +358,7 @@ select {
   color: rgb(7, 71, 166);
 
   display: grid;
-  grid-template-columns: 288px auto;
+  grid-template-columns: 268px auto;
   padding-right: 5px;
 }
 .done-column .column-header {
@@ -369,7 +393,7 @@ select {
 
 .story-with-subtasks {
   display: grid;
-  grid-template-columns: 288px auto;
+  grid-template-columns: 268px auto;
   padding-right: 5px;
 }
 .story-with-subtasks .story {
@@ -394,16 +418,16 @@ select {
 .subtask-card-status {
   width: 4px;
 }
-.subtask-card-status.status-id-10003 {
+.subtask-card-status.status-id-in-progress {
   background-color: rgb(66, 133, 244);
 }
-.subtask-card-status.status-id-10004 {
+.subtask-card-status.status-id-done {
   background-color: rgb(52, 168, 83);
 }
-.subtask-card-status.status-id-10002 {
+.subtask-card-status.status-id-to-do {
   background-color: #ccc;
 }
-.subtask-card-status.status-id-10046 {
+.subtask-card-status.status-id-pending-review {
   background-color: rgb(255, 199, 31);
 }
 .subtask-card.dim {
@@ -421,7 +445,7 @@ select {
   max-height: 76px;
   padding-left: 7px;
 }
-.subtask-card img {
+.subtask-card img, .subtask-card svg {
   justify-self: end;
   align-self: center;
   width: 24px;
@@ -433,7 +457,7 @@ select {
 }
 .story-subtask-groups {
   display: grid;
-  grid-template-columns: 1fr 25px 1fr 25px 1fr;
+  grid-template-columns: 1fr 20px 0.5fr 20px 0.5fr 20px 1fr;
   grid-gap: 3px;
   margin-right: 3px;
 }
@@ -452,6 +476,10 @@ select {
   min-width: 361px;
   margin: 0;
   padding: 18px 0;
+}
+.story-subtasks.single-column {
+  grid-template-columns: 1fr;
+  min-width: 177px;
 }
 
 .subtask-modal-issue-id {
@@ -481,9 +509,10 @@ select {
   vertical-align: middle;
 }
 .subtask-modal-summary {
+  box-sizing: border-box;
   height: 40px;
   line-height: 40px;
-  width: 90%;
+  width: 100%;
   border-radius: 3px;
   font-size: 24px;
   border-style: none;
@@ -500,7 +529,11 @@ select {
   font-size: 20px;
   display: block;
   margin-top: 20px;
+  margin-left: 20px;
   cursor: pointer;
+}
+.clearfix {
+  clear: both;
 }
 .right {
   float: right;
@@ -535,6 +568,7 @@ select {
   background-color: white;
   display: inline-block;
   width: 65%;
+  max-width: 900px;
   height: auto;
   z-index: 999;
   margin: 40px;
@@ -655,6 +689,9 @@ select {
   border-color: rgb(222, 53, 11);
   background-color: rgb(222, 53, 11);
   color: rgb(255, 255, 255);
+}
+.review_yellow {
+  color: rgb(255, 139, 0);
 }
 .yellow {
   border-color: rgb(255, 250, 230);
